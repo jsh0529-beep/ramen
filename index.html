@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>오늘의 라면 — 내 취향 라면 찾기</title>
+<meta name="description" content="6가지 질문으로 찾는 내 취향 라면. 맛있게 끓이는 법과 꿀조합, 후기까지 한 번에.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --broth:#C8352B;        /* 국물 레드 */
+  --broth-deep:#9E2118;
+  --egg:#F5C33B;          /* 계란 노랑 */
+  --noodle:#FBF3E4;       /* 면발 크림 */
+  --pot:#232120;          /* 냄비 차콜 */
+  --pot-soft:#3A3735;
+  --scallion:#4E7B4A;     /* 파 초록 */
+  --radius:18px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:'Noto Sans KR',sans-serif;
+  background:var(--pot);
+  color:var(--noodle);
+  min-height:100vh;
+  background-image:
+    radial-gradient(ellipse 90% 40% at 50% -5%, rgba(200,53,43,.28), transparent 60%),
+    radial-gradient(ellipse 60% 30% at 85% 100%, rgba(245,195,59,.08), transparent 60%);
+}
+.wrap{max-width:520px;margin:0 auto;padding:22px 18px 60px}
+.display{font-family:'Black Han Sans',sans-serif;font-weight:400;letter-spacing:.01em}
+
+/* ── 상단 로고 ── */
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:26px;cursor:pointer;user-select:none}
+.brand .bowl{font-size:26px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4))}
+.brand h1{font-family:'Black Han Sans';font-size:20px;color:var(--noodle)}
+.brand h1 em{font-style:normal;color:var(--egg)}
+.brand .tag{margin-left:auto;font-size:11px;color:rgba(251,243,228,.5);letter-spacing:.08em}
+
+/* ── 화면 전환 ── */
+.screen{display:none;animation:fadein .4s ease}
+.screen.on{display:block}
+@keyframes fadein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.screen{animation:none}}
+
+/* ── 인트로 ── */
+.hero{text-align:center;padding:26px 0 10px}
+.hero .steam{font-size:15px;color:var(--egg);letter-spacing:.35em;margin-bottom:14px;opacity:.9}
+.hero h2{font-family:'Black Han Sans';font-size:44px;line-height:1.18;margin-bottom:14px}
+.hero h2 .red{color:var(--broth);text-shadow:0 0 24px rgba(200,53,43,.5)}
+.hero p{font-size:15px;color:rgba(251,243,228,.75);line-height:1.7;margin-bottom:30px}
+.pot-visual{
+  width:170px;height:110px;margin:0 auto 30px;position:relative;
+  background:linear-gradient(180deg,#d8d2c6,#8f887c 70%,#6f6960);
+  border-radius:12px 12px 40px 40px;
+  box-shadow:inset 0 -14px 22px rgba(0,0,0,.35), 0 14px 28px rgba(0,0,0,.45);
+}
+.pot-visual::before{
+  content:"";position:absolute;inset:10px 12px auto 12px;height:56px;border-radius:8px;
+  background:radial-gradient(ellipse at 50% 30%, #E8503F, var(--broth-deep));
+  box-shadow:inset 0 6px 14px rgba(0,0,0,.35);
+}
+.pot-visual .noodle-swirl{
+  position:absolute;top:22px;left:50%;transform:translateX(-50%);
+  font-size:34px;line-height:1;filter:drop-shadow(0 2px 3px rgba(0,0,0,.4));
+}
+.pot-visual .handle{position:absolute;top:14px;width:26px;height:12px;background:#a49c8e;border-radius:6px}
+.pot-visual .handle.l{left:-24px}.pot-visual .handle.r{right:-24px}
+.steam-lines{position:absolute;top:-30px;left:0;right:0;text-align:center;font-size:20px;color:rgba(251,243,228,.55);letter-spacing:14px;animation:steam 2.6s ease-in-out infinite}
+@keyframes steam{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(-6px);opacity:.9}}
+@media (prefers-reduced-motion:reduce){.steam-lines{animation:none}}
+
+.btn{
+  display:block;width:100%;padding:17px;border:none;border-radius:var(--radius);
+  font-family:'Black Han Sans';font-size:19px;letter-spacing:.03em;cursor:pointer;
+  background:var(--broth);color:var(--noodle);
+  box-shadow:0 6px 0 var(--broth-deep), 0 14px 26px rgba(200,53,43,.35);
+  transition:transform .12s, box-shadow .12s;
+}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--broth-deep)}
+.btn.sub{background:var(--pot-soft);color:var(--noodle);box-shadow:0 4px 0 #1b1918;font-size:16px;margin-top:12px}
+.btn:focus-visible,.opt:focus-visible,.star-btn:focus-visible{outline:3px solid var(--egg);outline-offset:2px}
+
+/* ── 퀴즈: 끓이기 단계 진행바 ── */
+.cook-progress{display:flex;align-items:center;gap:6px;margin-bottom:26px}
+.cook-step{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;opacity:.32;transition:opacity .3s}
+.cook-step.done,.cook-step.now{opacity:1}
+.cook-step .ic{font-size:20px}
+.cook-step .lb{font-size:10px;letter-spacing:.05em;color:rgba(251,243,228,.8)}
+.cook-step.now .ic{animation:bob 1s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@media (prefers-reduced-motion:reduce){.cook-step.now .ic{animation:none}}
+.cook-bar{height:5px;background:var(--pot-soft);border-radius:3px;overflow:hidden;margin-bottom:28px}
+.cook-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--egg),var(--broth));border-radius:3px;transition:width .35s ease}
+
+.q-num{font-size:12px;color:var(--egg);letter-spacing:.2em;margin-bottom:8px}
+.q-title{font-family:'Black Han Sans';font-size:25px;line-height:1.35;margin-bottom:22px}
+.opts{display:flex;flex-direction:column;gap:12px}
+.opt{
+  text-align:left;padding:16px 18px;border-radius:14px;border:2px solid var(--pot-soft);
+  background:rgba(58,55,53,.55);color:var(--noodle);font-size:15.5px;font-weight:500;
+  cursor:pointer;transition:border-color .15s, background .15s, transform .1s;
+  font-family:'Noto Sans KR';line-height:1.5;
+}
+.opt:active{transform:scale(.98)}
+.opt .emo{margin-right:9px}
+.opt:hover{border-color:var(--egg)}
+
+/* ── 결과 ── */
+.result-eyebrow{text-align:center;font-size:12px;letter-spacing:.3em;color:var(--egg);margin-bottom:10px}
+.result-card{
+  background:linear-gradient(165deg,#fffaf0,#f4e9d6);
+  color:var(--pot);border-radius:22px;padding:30px 24px 26px;
+  box-shadow:0 20px 44px rgba(0,0,0,.5);position:relative;overflow:hidden;
+}
+.result-card::before{content:"";position:absolute;top:0;left:0;right:0;height:8px;background:repeating-linear-gradient(90deg,var(--broth) 0 22px,var(--egg) 22px 44px)}
+.r-brand{font-size:12px;font-weight:700;color:var(--broth);letter-spacing:.15em;margin-bottom:6px}
+.r-name{font-family:'Black Han Sans';font-size:38px;line-height:1.15;margin-bottom:6px}
+.r-emoji{font-size:52px;line-height:1;margin-bottom:10px}
+.r-desc{font-size:14.5px;line-height:1.75;color:#4c453c;margin-bottom:18px}
+.spice-row{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.spice-row .lbl{font-size:12px;font-weight:700;color:#6b6155;letter-spacing:.08em}
+.spice-gauge{display:flex;gap:3px}
+.spice-gauge span{font-size:17px;filter:grayscale(1);opacity:.3}
+.spice-gauge span.hot{filter:none;opacity:1}
+.tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:4px}
+.tags b{font-weight:700;font-size:12px;padding:5px 11px;border-radius:99px;background:rgba(200,53,43,.1);color:var(--broth)}
+
+.section-label{font-family:'Black Han Sans';font-size:18px;margin:30px 0 14px;display:flex;align-items:center;gap:9px}
+.section-label::after{content:"";flex:1;height:1px;background:rgba(251,243,228,.15)}
+.recipe-card{background:var(--pot-soft);border-radius:16px;padding:20px 18px;margin-bottom:12px}
+.recipe-card h4{font-size:14px;color:var(--egg);font-weight:700;margin-bottom:10px;letter-spacing:.05em}
+.recipe-card ol{padding-left:20px;display:flex;flex-direction:column;gap:9px}
+.recipe-card li{font-size:14.5px;line-height:1.65;color:rgba(251,243,228,.92)}
+.recipe-card .combo{font-size:14px;line-height:1.7;color:rgba(251,243,228,.85)}
+.recipe-card .combo b{color:var(--egg)}
+
+.runner{display:flex;gap:10px}
+.runner-card{flex:1;background:var(--pot-soft);border-radius:14px;padding:15px 13px;text-align:center;cursor:pointer;border:2px solid transparent;transition:border-color .15s}
+.runner-card:hover{border-color:var(--egg)}
+.runner-card .e{font-size:26px;margin-bottom:6px}
+.runner-card .n{font-family:'Black Han Sans';font-size:14px;line-height:1.3}
+.runner-card .s{font-size:11px;color:rgba(251,243,228,.55);margin-top:3px}
+
+/* ── 후기 ── */
+.review-form{background:var(--pot-soft);border-radius:16px;padding:18px}
+.star-row{display:flex;gap:4px;margin-bottom:12px}
+.star-btn{background:none;border:none;font-size:27px;cursor:pointer;filter:grayscale(1);opacity:.35;transition:.15s;padding:2px}
+.star-btn.sel{filter:none;opacity:1;transform:scale(1.08)}
+.review-form input,.review-form textarea{
+  width:100%;border:none;border-radius:10px;padding:12px 13px;margin-bottom:10px;
+  background:#1b1918;color:var(--noodle);font-family:'Noto Sans KR';font-size:14px;resize:vertical;
+}
+.review-form input::placeholder,.review-form textarea::placeholder{color:rgba(251,243,228,.4)}
+.btn.small{padding:13px;font-size:16px}
+.review-item{background:var(--pot-soft);border-radius:14px;padding:14px 16px;margin-top:10px}
+.review-item .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.review-item .who{font-weight:700;font-size:13.5px;color:var(--egg)}
+.review-item .stars{font-size:13px}
+.review-item .txt{font-size:14px;line-height:1.65;color:rgba(251,243,228,.9)}
+.review-item .date{font-size:11px;color:rgba(251,243,228,.4);margin-top:6px}
+.review-empty{text-align:center;font-size:13.5px;color:rgba(251,243,228,.5);padding:18px 0}
+.storage-note{font-size:11px;color:rgba(251,243,228,.4);margin-top:8px;line-height:1.5}
+
+/* ── 홍보 배너 ── */
+.banners{margin-top:38px;display:flex;flex-direction:column;gap:12px}
+.banner{
+  display:flex;align-items:center;gap:14px;text-decoration:none;border-radius:16px;padding:16px 18px;
+  transition:transform .15s, box-shadow .15s;
+}
+.banner:hover{transform:translateY(-2px)}
+.banner .b-ic{font-size:30px;flex-shrink:0}
+.banner .b-body{flex:1;min-width:0}
+.banner .b-kicker{font-size:10.5px;letter-spacing:.18em;margin-bottom:3px;opacity:.75}
+.banner .b-title{font-family:'Black Han Sans';font-size:17px;line-height:1.3;margin-bottom:2px}
+.banner .b-sub{font-size:12px;line-height:1.5;opacity:.85}
+.banner .b-go{font-size:18px;opacity:.7}
+.banner.moon{background:linear-gradient(135deg,#1E2749,#2E3A6E);color:#EFE9FF;box-shadow:0 10px 24px rgba(30,39,73,.5)}
+.banner.moon .b-kicker{color:#B9A8F0}
+.banner.book{background:linear-gradient(135deg,#0F5B4E,#1A8A6F);color:#F2FBF6;box-shadow:0 10px 24px rgba(15,91,78,.45)}
+.banner.book .b-kicker{color:#9FE6C4}
+
+footer{margin-top:34px;text-align:center;font-size:11px;color:rgba(251,243,228,.35);line-height:1.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="brand" onclick="goHome()">
+    <span class="bowl">🍜</span>
+    <h1>오늘의 <em>라면</em></h1>
+    <span class="tag">RAMEN FINDER</span>
+  </div>
+
+  <!-- ══ 인트로 ══ -->
+  <section class="screen on" id="scr-intro">
+    <div class="hero">
+      <div class="steam">지금 판매 중인 국민 라면 18종</div>
+      <h2>오늘 뭐 끓이지?<br><span class="red">6문항</span>이면 답 나옴</h2>
+      <p>국물파? 볶음파? 매운맛 한계는 어디까지?<br>취향을 고르면 딱 맞는 라면과<br>제일 맛있게 끓이는 법까지 알려드려요.</p>
+      <div class="pot-visual">
+        <div class="steam-lines">〜 〜 〜</div>
+        <span class="handle l"></span><span class="handle r"></span>
+        <span class="noodle-swirl">🍜</span>
+      </div>
+      <button class="btn" onclick="startQuiz()">물 올리기 🔥</button>
+    </div>
+  </section>
+
+  <!-- ══ 퀴즈 ══ -->
+  <section class="screen" id="scr-quiz">
+    <div class="cook-progress" id="cookSteps"></div>
+    <div class="cook-bar"><i id="cookBarFill" style="width:0%"></i></div>
+    <div class="q-num" id="qNum"></div>
+    <div class="q-title" id="qTitle"></div>
+    <div class="opts" id="qOpts"></div>
+  </section>
+
+  <!-- ══ 결과 ══ -->
+  <section class="screen" id="scr-result">
+    <div class="result-eyebrow">오늘의 라면은</div>
+    <div class="result-card" id="resultCard"></div>
+
+    <div class="section-label">🔥 제일 맛있게 끓이는 법</div>
+    <div class="recipe-card">
+      <h4 id="recipeTitle"></h4>
+      <ol id="recipeSteps"></ol>
+    </div>
+    <div class="recipe-card">
+      <h4>🥢 꿀조합</h4>
+      <p class="combo" id="comboText"></p>
+    </div>
+
+    <div class="section-label">🍥 아깝게 놓친 라면</div>
+    <div class="runner" id="runnerUp"></div>
+
+    <div class="section-label">✍️ 이 라면 후기</div>
+    <div class="review-form">
+      <div class="star-row" id="starRow"></div>
+      <input type="text" id="rvName" maxlength="12" placeholder="닉네임 (선택)">
+      <textarea id="rvText" rows="3" maxlength="300" placeholder="맛 평가, 나만의 조리 꿀팁을 남겨주세요"></textarea>
+      <button class="btn small" onclick="submitReview()">후기 남기기</button>
+      <p class="storage-note">※ 후기는 이 브라우저에 저장돼요. 같은 기기에서 다시 방문하면 볼 수 있어요.</p>
+    </div>
+    <div id="reviewList"></div>
+
+    <button class="btn sub" onclick="startQuiz()">🔄 다시 끓여보기</button>
+    <button class="btn sub" onclick="goHome()">처음으로</button>
+
+    <div class="banners">
+      <a class="banner moon" href="https://jsh0529-beep.github.io/saju/" target="_blank" rel="noopener">
+        <span class="b-ic">🌙</span>
+        <span class="b-body">
+          <span class="b-kicker" style="display:block">AI 사주 상담소</span>
+          <span class="b-title" style="display:block">월하서재 — 달빛 아래 나의 사주</span>
+          <span class="b-sub" style="display:block">라면 물 끓는 동안, 내 운세도 한 그릇 어때요?</span>
+        </span>
+        <span class="b-go">›</span>
+      </a>
+      <a class="banner book" href="https://m.yes24.com/goods/detail/191222385" target="_blank" rel="noopener">
+        <span class="b-ic">📗</span>
+        <span class="b-body">
+          <span class="b-kicker" style="display:block">우리 아이 첫 경제 공부</span>
+          <span class="b-title" style="display:block">국영수보다 먼저 가르쳐야 할 돈의 언어</span>
+          <span class="b-sub" style="display:block">라면값부터 용돈까지 — 아이와 함께 읽는 금융 문해력</span>
+        </span>
+        <span class="b-go">›</span>
+      </a>
+    </div>
+  </section>
+
+  <footer>© 오늘의 라면 · 제품 정보는 2026년 기준 시판 라인업을 참고했습니다.<br>각 제품명·상표는 해당 제조사의 자산입니다.</footer>
+</div>
+
+<script>
+/* ═══════════ 라면 데이터 (2026 시판 라인업) ═══════════
+   속성: form(soup국물/stir볶음/bibim비빔), spice 0~5, rich(진한맛)0~5,
+   base(spicy얼큰/savory구수/seafood해물/black짜장/creamy크리미/sweet새콤달콤/chicken닭),
+   era(classic/new) */
+const RAMEN = [
+ {id:"shin", brand:"농심", name:"신라면", emoji:"🌶️", form:"soup", spice:3, rich:3, base:"spicy", era:"classic",
+  desc:"1986년부터 지금까지 대한민국 라면의 기준. 얼큰한 소고기 국물의 정석으로, 뭘 골라야 할지 모르겠을 때 절대 실패 없는 선택이에요.",
+  tags:["국민라면","얼큰국물","소고기베이스"],
+  recipe:["물 550ml를 팔팔 끓인 뒤 스프와 후레이크를 먼저 넣어 국물 맛을 낸다","면을 넣고 4분 30초, 중간에 면을 들었다 놓으며 공기와 접촉시키면 면발이 더 쫄깃해진다","불 끄기 30초 전 대파를 넣고, 마지막에 계란을 넣되 젓지 말고 반숙으로 익힌다"],
+  combo:"김치 + 흰쌀밥은 국룰. <b>콩나물 한 줌</b>을 처음부터 같이 끓이면 해장 라면으로 변신해요."},
+ {id:"shinred", brand:"농심", name:"신라면 더 레드", emoji:"🔥", form:"soup", spice:5, rich:3, base:"spicy", era:"new",
+  desc:"'더 맵게'를 외치는 사람들을 위해 나온 신라면의 극한 버전. 기본 신라면보다 확실히 강한 화끈함이 필요할 때.",
+  tags:["극강매운맛","도전라면","얼큰국물"],
+  recipe:["물 500ml로 기본보다 살짝 적게 잡아 국물을 진하게 만든다","면과 스프를 넣고 4분 30초 끓인 뒤 후첨양념분말은 불을 끄고 넣어야 매운 향이 살아난다","너무 맵다면 계란 1개를 풀거나 치즈 한 장으로 중화한다"],
+  combo:"<b>체다치즈 한 장</b> + 우유 한 컵을 곁들이면 매운맛 조절 가능. 주먹밥과 함께라면 완벽한 도전."},
+ {id:"jin_m", brand:"오뚜기", name:"진라면 매운맛", emoji:"🍜", form:"soup", spice:3, rich:3, base:"spicy", era:"classic",
+  desc:"신라면의 영원한 라이벌. 살짝 더 부드럽고 감칠맛 도는 매운 국물에, 잘 퍼지지 않는 면발이 강점이에요.",
+  tags:["스테디셀러","감칠맛","쫄깃면발"],
+  recipe:["물 550ml가 끓으면 스프·건더기를 넣고 면을 넣어 4분간 끓인다","진라면은 면이 잘 안 퍼지는 편이라 1분 정도 더 끓여도 괜찮다 — 국물이 면에 배어들며 더 맛있어진다","청양고추 반 개를 썰어 넣으면 칼칼함이 확 살아난다"],
+  combo:"<b>만두 2~3개</b>를 같이 끓이는 만두라면이 진라면과 최고 궁합. 단무지 곁들이면 분식집 감성 완성."},
+ {id:"jin_s", brand:"오뚜기", name:"진라면 순한맛", emoji:"🥛", form:"soup", spice:1, rich:2, base:"savory", era:"classic",
+  desc:"맵찔이도, 아이도, 속 쓰린 날에도 편안한 순한 국물. 구수하고 담백해서 계란이랑 특히 잘 어울려요.",
+  tags:["순한맛","온가족","담백국물"],
+  recipe:["물 550ml에 스프를 넣고 끓인 뒤 면을 넣어 4분간 조리한다","계란을 풀어 넣고 살살 저으면 계란탕처럼 부드러운 국물이 된다","참기름 두어 방울과 김가루를 올리면 고소함이 배가된다"],
+  combo:"<b>치즈 + 우유 약간</b>을 넣으면 아이들이 좋아하는 크리미 라면으로. 김밥과 함께면 소풍 세트."},
+ {id:"ansung", brand:"농심", name:"안성탕면", emoji:"🍲", form:"soup", spice:2, rich:2, base:"savory", era:"classic",
+  desc:"된장 베이스의 구수한 국물이 매력인 40년 스테디셀러. 자극적이지 않고 뜨끈한 시골 장터 국밥 같은 맛.",
+  tags:["구수한맛","된장베이스","순한얼큰"],
+  recipe:["물 550ml를 끓여 스프를 먼저 풀고 면을 넣어 4분 30초 끓인다","호박·양파 같은 채소를 넣으면 된장찌개 느낌의 구수함이 살아난다","마지막에 고춧가루 반 스푼을 넣으면 칼칼한 안성탕면으로 업그레이드"],
+  combo:"<b>식은 밥 말아먹기</b> 최적화 라면. 김치 송송 썰어 넣으면 김치국밥 부럽지 않아요."},
+ {id:"neoguri", brand:"농심", name:"너구리", emoji:"🦝", form:"soup", spice:2, rich:3, base:"seafood", era:"classic",
+  desc:"오동통한 우동면과 다시마가 들어간 얼큰 해물 국물. 영화 '기생충' 짜파구리의 주인공이기도 하죠.",
+  tags:["오동통면","해물국물","다시마"],
+  recipe:["물 550ml에 다시마와 스프를 먼저 넣고 끓여 해물 육수를 우려낸다","굵은 면이라 5분 정도 충분히 끓여야 면심까지 익는다","다시마는 버리지 말고 건져 먹기 — 쫄깃한 별미다"],
+  combo:"<b>짜파게티와 반반</b> 조합이 그 유명한 짜파구리. 오징어나 새우를 넣으면 해물우동으로 변신."},
+ {id:"samyang", brand:"삼양식품", name:"삼양라면", emoji:"🧡", form:"soup", spice:2, rich:2, base:"savory", era:"classic",
+  desc:"1963년 대한민국 최초의 라면. 햄 향이 은은한 달큰하고 순한 국물로, 추억의 맛을 그대로 간직하고 있어요.",
+  tags:["원조라면","1963년생","달큰국물"],
+  recipe:["물 550ml가 끓으면 스프와 면을 넣고 4분간 끓인다","삼양라면 특유의 햄 풍미는 계란보다 파와 잘 어울린다 — 대파를 아낌없이","마지막에 후추 톡톡 치면 옛날 분식집 맛 완성"],
+  combo:"<b>분홍 소시지 부침</b>과 함께 먹으면 레트로 감성 만점. 설탕 아주 살짝 넣는 옛날 방식도 별미."},
+ {id:"sy1963", brand:"삼양식품", name:"삼양1963", emoji:"🐂", form:"soup", spice:2, rich:5, base:"savory", era:"new",
+  desc:"우지(소기름)로 끓여낸 프리미엄 라면. 삼양이 창업 정신을 담아 부활시킨 화제작으로, 깊고 묵직한 사골 같은 풍미가 특징.",
+  tags:["우지프리미엄","2025화제작","진한풍미"],
+  recipe:["물 500ml로 약간 적게 잡아 우지 국물의 농도를 살린다","스프를 먼저 풀고 면을 넣어 4분 30초 — 기름 국물이라 팔팔 끓는 상태를 유지한다","대파 흰 부분을 넣으면 느끼함 없이 깔끔하게 마무리된다"],
+  combo:"<b>공깃밥 + 김치</b>만으로 완성. 진한 국물이라 밥 말았을 때 진가가 드러나요."},
+ {id:"yeol", brand:"오뚜기", name:"열라면", emoji:"🥵", form:"soup", spice:4, rich:2, base:"spicy", era:"classic",
+  desc:"'열받을 때 열라면'. 깔끔하게 화끈한 매운맛으로 30년간 매운 라면의 기준을 지켜온 스테디셀러.",
+  tags:["깔끔매운맛","해장각","30주년"],
+  recipe:["물 550ml에 스프를 넣고 끓인 뒤 면을 넣어 4분간 끓인다","순두부 반 모 + 계란을 넣으면 그 유명한 '순두부 열라면'이 된다","다진 마늘 반 스푼을 넣으면 해장 국물로 완벽해진다"],
+  combo:"<b>순두부 + 계란 + 다진마늘</b> = 편의점에서 시작된 전설의 레시피. 해장엔 이만한 게 없어요."},
+ {id:"royal", brand:"오뚜기", name:"로열 라면", emoji:"👑", form:"soup", spice:4, rich:3, base:"spicy", era:"new",
+  desc:"열라면 30주년을 맞아 화제의 '순두부 열라면' 레시피를 아예 제품화한 2026년 신상. 매운맛과 고소함의 균형이 좋아요.",
+  tags:["2026신상","열라면DNA","화제의레시피"],
+  recipe:["물 550ml를 끓여 스프와 면을 넣고 4분간 조리한다","기본기가 순두부 스타일이라 계란 하나만 더해도 충분히 부드럽다","마지막에 참기름 한 방울로 고소함을 끌어올린다"],
+  combo:"<b>계란 + 파송송</b>이면 충분. 신상 라면은 첫 시도엔 기본 조리법 그대로 먹어보는 게 예의!"},
+ {id:"buldak", brand:"삼양식품", name:"불닭볶음면", emoji:"🐔", form:"stir", spice:5, rich:3, base:"chicken", era:"classic",
+  desc:"전 세계를 울린 K-매운맛의 상징. 달콤하면서 지독하게 매운 불닭 소스는 중독성이 어마어마해요.",
+  tags:["글로벌스타","극한도전","단짠매운"],
+  recipe:["끓는 물에 면을 5분 삶은 뒤 물을 8스푼 정도만 남기고 버린다","약불에서 소스를 넣고 30초간 볶듯이 비벼 소스를 면에 코팅한다","불을 끄고 후레이크(김+깨)를 뿌린다 — 물 8스푼이 매운맛 완화의 핵심"],
+  combo:"<b>스트링치즈 or 계란후라이</b>를 올리면 매운맛이 부드러워져요. 삼각김밥과 함께면 편의점 정식 완성."},
+ {id:"carbo", brand:"삼양식품", name:"까르보 불닭볶음면", emoji:"🩷", form:"stir", spice:3, rich:4, base:"creamy", era:"new",
+  desc:"불닭의 매운맛에 크리미한 치즈 풍미를 더한 순한 버전. 핑크색 포장만큼 부드럽고, 해외에서도 품절 대란을 일으킨 주인공.",
+  tags:["크리미","품절대란","순한불닭"],
+  recipe:["면을 5분 삶고 물을 6~8스푼 남긴 채 버린다","액상소스와 까르보 분말을 넣고 약불에서 골고루 비빈다","우유 2스푼을 추가하면 진짜 까르보나라처럼 꾸덕해진다"],
+  combo:"<b>우유 2스푼 + 베이컨</b>이면 로제급 업그레이드. 모짜렐라 치즈 추가는 옵션이 아니라 필수."},
+ {id:"chapa", brand:"농심", name:"짜파게티", emoji:"🖤", form:"stir", spice:0, rich:3, base:"black", era:"classic",
+  desc:"'일요일은 내가 짜파게티 요리사'. 안 맵고 고소한 짜장 볶음면의 대명사로, 남녀노소 호불호 없는 안전한 선택.",
+  tags:["짜장볶음면","안매움","일요일감성"],
+  recipe:["끓는 물에 면과 건더기를 넣고 5분간 삶는다","물을 8스푼 남기고 버린 뒤 분말스프와 올리브유를 넣고 약불에서 볶는다","불을 끄고 30초 뜸을 들이면 소스가 면에 착 붙는다"],
+  combo:"<b>계란후라이 + 진짜 짜파게티엔 오이채</b>. 너구리와 섞으면 짜파구리, 신라면 볶음면과 섞으면 신볶게티."},
+ {id:"bibim", brand:"팔도", name:"팔도비빔면", emoji:"🌈", form:"bibim", spice:2, rich:2, base:"sweet", era:"classic",
+  desc:"새콤달콤한 비빔장의 원조. 차갑게 비벼 먹는 유일한 국민 라면으로, 여름이면 품절되는 그 라면이에요.",
+  tags:["새콤달콤","여름국룰","차가운면"],
+  recipe:["면을 3분만 삶는다 — 오래 삶으면 비빔면 특유의 탱글함이 사라진다","찬물, 가능하면 얼음물에 면을 바락바락 헹궈 전분기를 완전히 뺀다","물기를 꽉 짜고 액상스프를 넣어 비빈다. 참기름 반 스푼 추가는 국룰"],
+  combo:"<b>삶은 계란 반쪽 + 오이채</b>가 정석. 구운 삼겹살을 싸 먹으면 여름 저녁이 완성돼요."},
+ {id:"jjam", brand:"오뚜기", name:"진짬뽕", emoji:"🦑", form:"soup", spice:3, rich:4, base:"seafood", era:"classic",
+  desc:"불맛 나는 진한 해물 짬뽕을 집에서. 굵은 면발과 묵직한 국물로 중국집 짬뽕이 부럽지 않은 프리미엄 라면.",
+  tags:["불맛","해물짬뽕","굵은면"],
+  recipe:["물 500ml에 건더기스프를 먼저 넣고 끓여 해물 향을 우린다","굵은 면이므로 5분간 충분히 끓이고, 마지막에 유성스프를 넣어 불맛을 살린다","양파·청경채를 추가하면 중국집 짬뽕 비주얼 완성"],
+  combo:"<b>냉동 해물믹스 한 줌</b>이면 진짜 짬뽕. 군만두를 곁들이면 중식당 세트 메뉴가 부럽지 않아요."},
+ {id:"teumsae", brand:"팔도", name:"틈새라면", emoji:"🌋", form:"soup", spice:5, rich:2, base:"spicy", era:"classic",
+  desc:"명동 매운 라면 노포에서 시작된 극한의 매운맛. 매운 걸로는 국민 라면 중 최상위권 — 진짜 맵부심러의 선택.",
+  tags:["노포출신","극한매운맛","맵부심"],
+  recipe:["물 500ml에 스프를 넣고 끓인 뒤 면을 넣어 4분간 끓인다","원조 노포 스타일로 콩나물 한 줌을 같이 끓이면 아삭함과 해장 효과가 더해진다","계란을 풀어 넣으면 매운맛이 살짝 중화되며 국물이 부드러워진다"],
+  combo:"<b>콩나물 + 계란</b>이 명동 원조 스타일. 우유 한 컵은 옆에 꼭 준비해 두세요."},
+ {id:"sesame", brand:"오뚜기", name:"참깨라면", emoji:"🥚", form:"soup", spice:2, rich:3, base:"savory", era:"classic",
+  desc:"고소한 참깨 국물에 계란 블럭이 들어간 유일한 라면. 부드럽고 고소한 맛으로 두터운 마니아층을 보유하고 있어요.",
+  tags:["계란블럭","고소한맛","마니아픽"],
+  recipe:["물 550ml에 분말스프와 계란블럭을 넣고 끓인 뒤 면을 넣어 4분 조리한다","마지막에 유성스프(참깨기름)를 넣어야 고소한 향이 날아가지 않는다","계란 하나를 더 풀면 고소함이 두 배가 된다"],
+  combo:"<b>생계란 노른자</b>를 마지막에 톡 — 국물에 풀어 먹으면 참깨 향과 환상 궁합."},
+ {id:"kokko", brand:"팔도", name:"꼬꼬면", emoji:"🐓", form:"soup", spice:2, rich:2, base:"chicken", era:"classic",
+  desc:"하얀 국물 라면 열풍의 주인공. 닭육수에 청양고추의 칼칼함이 더해진 맑고 개운한 맛이에요.",
+  tags:["하얀국물","닭육수","칼칼개운"],
+  recipe:["물 550ml에 스프를 넣고 끓인 뒤 면을 넣어 4분간 조리한다","청양고추 반 개를 추가하면 칼칼함이 살아나 닭칼국수 느낌이 난다","마지막에 후추를 살짝 — 맑은 국물엔 후추가 포인트"],
+  combo:"<b>닭가슴살 or 계란</b>을 더하면 든든한 한 끼. 김치보다 <b>단무지</b>가 의외로 잘 어울려요."}
+];
+
+/* ═══════════ 퀴즈 ═══════════ */
+const QUESTIONS = [
+ {t:"라면 하면 떠오르는 그 장면, 당신의 라면은?",
+  o:[
+   {e:"🍲", x:"뜨끈한 국물 후루룩 — 국물이 본체지", w:{form:{soup:3}}},
+   {e:"🍝", x:"소스에 착 비벼진 볶음면 — 국물은 거들 뿐", w:{form:{stir:3}}},
+   {e:"🧊", x:"차갑고 새콤달콤한 비빔면 — 탱글함이 생명", w:{form:{bibim:3}}}
+  ]},
+ {t:"솔직하게, 당신의 맵기 레벨은?",
+  o:[
+   {e:"😇", x:"맵찔이 — 순한맛이 최고야", w:{spice:0}},
+   {e:"🙂", x:"신라면 정도가 딱 좋아", w:{spice:3}},
+   {e:"😤", x:"열라면은 돼야 먹은 것 같지", w:{spice:4}},
+   {e:"🔥", x:"불닭도 껌이지, 더 매운 거 없나?", w:{spice:5}}
+  ]},
+ {t:"국물(소스)의 무게감은 어느 쪽?",
+  o:[
+   {e:"💧", x:"깔끔하고 개운하게", w:{rich:1}},
+   {e:"🍜", x:"적당히 진하게 — 밸런스가 중요", w:{rich:3}},
+   {e:"🥘", x:"묵직하고 진~하게, 밥 말아먹을 정도로", w:{rich:5}}
+  ]},
+ {t:"끌리는 베이스 맛을 하나 고른다면?",
+  o:[
+   {e:"🌶️", x:"얼큰한 소고기·고추 국물", w:{base:{spicy:3}}},
+   {e:"🍚", x:"구수하고 담백한 된장·사골류", w:{base:{savory:3}}},
+   {e:"🦐", x:"시원한 해물·짬뽕 스타일", w:{base:{seafood:3}}},
+   {e:"🧀", x:"짜장·크림처럼 고소하고 꾸덕한 맛", w:{base:{black:2,creamy:2}}}
+  ]},
+ {t:"신상 vs 클래식, 당신의 선택은?",
+  o:[
+   {e:"🏆", x:"검증된 스테디셀러 — 실패 없는 게 최고", w:{era:{classic:2}}},
+   {e:"✨", x:"신상·화제작 먼저 도전하는 얼리어답터", w:{era:{new:3}}},
+   {e:"🤷", x:"맛만 있으면 뭐든 OK", w:{}}
+  ]},
+ {t:"오늘 라면 먹는 상황은?",
+  o:[
+   {e:"🌙", x:"야식 — 죄책감보다 맛이 먼저", w:{rich:1,spice:1}},
+   {e:"🍺", x:"해장 — 속 풀리는 시원한 국물", w:{form:{soup:2},base:{spicy:1}}},
+   {e:"👨‍👩‍👧", x:"가족 식사 — 다 같이 먹을 수 있는 맛", w:{spice:-2,era:{classic:1}}},
+   {e:"🎯", x:"혼밥 도전 — 궁금했던 그 라면 정복", w:{era:{new:2},spice:1}}
+  ]}
+];
+const COOK_STAGES = [
+ {ic:"🫗", lb:"물 붓기"},{ic:"🔥", lb:"물 끓이기"},{ic:"🧂", lb:"스프 넣기"},
+ {ic:"🍜", lb:"면 넣기"},{ic:"🥚", lb:"계란 투하"},{ic:"🥢", lb:"완성!"}
+];
+
+let qi=0, score={form:{soup:0,stir:0,bibim:0}, spice:[], rich:[], base:{}, era:{classic:0,new:0}};
+let currentRamen=null, selStars=0;
+
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');window.scrollTo({top:0,behavior:'smooth'})}
+function goHome(){show('scr-intro')}
+
+function startQuiz(){
+  qi=0; score={form:{soup:0,stir:0,bibim:0}, spice:[], rich:[], base:{}, era:{classic:0,new:0}};
+  renderQ(); show('scr-quiz');
+}
+function renderQ(){
+  const q=QUESTIONS[qi];
+  const steps=document.getElementById('cookSteps');
+  steps.innerHTML=COOK_STAGES.map((s,i)=>`<div class="cook-step ${i<qi?'done':i===qi?'now':''}"><span class="ic">${s.ic}</span><span class="lb">${s.lb}</span></div>`).join('');
+  document.getElementById('cookBarFill').style.width=(qi/QUESTIONS.length*100)+'%';
+  document.getElementById('qNum').textContent=`STEP ${qi+1} / ${QUESTIONS.length}`;
+  document.getElementById('qTitle').textContent=q.t;
+  document.getElementById('qOpts').innerHTML=q.o.map((o,i)=>`<button class="opt" onclick="answer(${i})"><span class="emo">${o.e}</span>${o.x}</button>`).join('');
+}
+function answer(i){
+  const w=QUESTIONS[qi].o[i].w;
+  if(w.form) for(const k in w.form) score.form[k]+=w.form[k];
+  if(typeof w.spice==='number') score.spice.push(w.spice);
+  if(typeof w.rich==='number') score.rich.push(w.rich);
+  if(w.base) for(const k in w.base) score.base[k]=(score.base[k]||0)+w.base[k];
+  if(w.era) for(const k in w.era) score.era[k]+=w.era[k];
+  qi++;
+  if(qi<QUESTIONS.length) renderQ(); else finish();
+}
+function avg(a,d){return a.length? a.reduce((x,y)=>x+y,0)/a.length : d}
+function finish(){
+  const prefForm=Object.entries(score.form).sort((a,b)=>b[1]-a[1])[0];
+  const wantSpice=avg(score.spice,2.5), wantRich=avg(score.rich,3);
+  const ranked=RAMEN.map(r=>{
+    let s=0;
+    if(prefForm[1]>0 && r.form===prefForm[0]) s+=6;
+    s-=Math.abs(r.spice-wantSpice)*1.8;
+    s-=Math.abs(r.rich-wantRich)*1.0;
+    s+=(score.base[r.base]||0)*1.6;
+    s+=(score.era[r.era]||0)*1.1;
+    s+=Math.random()*0.5; /* 동점 셔플 */
+    return {r,s};
+  }).sort((a,b)=>b.s-a.s);
+  showResult(ranked[0].r,[ranked[1].r,ranked[2].r]);
+}
+function showResult(r,runners){
+  currentRamen=r;
+  document.getElementById('resultCard').innerHTML=`
+    <div class="r-emoji">${r.emoji}</div>
+    <div class="r-brand">${r.brand}</div>
+    <div class="r-name">${r.name}</div>
+    <div class="spice-row"><span class="lbl">맵기</span><span class="spice-gauge">${[1,2,3,4,5].map(i=>`<span class="${i<=r.spice?'hot':''}">🌶️</span>`).join('')}</span></div>
+    <p class="r-desc">${r.desc}</p>
+    <div class="tags">${r.tags.map(t=>`<b>#${t}</b>`).join('')}</div>`;
+  document.getElementById('recipeTitle').textContent=`${r.name} 공식+꿀팁 조리법`;
+  document.getElementById('recipeSteps').innerHTML=r.recipe.map(s=>`<li>${s}</li>`).join('');
+  document.getElementById('comboText').innerHTML=r.combo;
+  document.getElementById('runnerUp').innerHTML=runners.map(u=>`
+    <div class="runner-card" role="button" tabindex="0" onclick='jumpTo("${u.id}")' onkeydown='if(event.key==="Enter")jumpTo("${u.id}")'>
+      <div class="e">${u.emoji}</div><div class="n">${u.name}</div><div class="s">${u.brand}</div>
+    </div>`).join('');
+  selStars=0; renderStars();
+  document.getElementById('rvName').value=''; document.getElementById('rvText').value='';
+  renderReviews();
+  show('scr-result');
+}
+function jumpTo(id){
+  const r=RAMEN.find(x=>x.id===id);
+  const others=RAMEN.filter(x=>x.id!==id).sort(()=>Math.random()-.5).slice(0,2);
+  showResult(r,others);
+}
+
+/* ═══════════ 후기 (localStorage + 메모리 폴백) ═══════════ */
+const memStore={};
+function loadReviews(){
+  try{ return JSON.parse(localStorage.getItem('ramen-reviews')||'{}'); }
+  catch(e){ return memStore; }
+}
+function saveReviews(d){
+  try{ localStorage.setItem('ramen-reviews',JSON.stringify(d)); }
+  catch(e){ Object.assign(memStore,d); }
+}
+function renderStars(){
+  document.getElementById('starRow').innerHTML=[1,2,3,4,5].map(i=>
+    `<button class="star-btn ${i<=selStars?'sel':''}" aria-label="${i}점" onclick="selStars=${i};renderStars()">⭐</button>`).join('');
+}
+function submitReview(){
+  const txt=document.getElementById('rvText').value.trim();
+  if(!selStars){alert('별점을 먼저 골라주세요! ⭐');return}
+  if(!txt){alert('후기를 한 줄이라도 남겨주세요 🙏');return}
+  const name=document.getElementById('rvName').value.trim()||'익명의 라면러';
+  const all=loadReviews();
+  if(!all[currentRamen.id]) all[currentRamen.id]=[];
+  all[currentRamen.id].unshift({n:name,s:selStars,t:txt,d:new Date().toLocaleDateString('ko-KR')});
+  all[currentRamen.id]=all[currentRamen.id].slice(0,30);
+  saveReviews(all);
+  selStars=0; renderStars();
+  document.getElementById('rvName').value=''; document.getElementById('rvText').value='';
+  renderReviews();
+}
+function renderReviews(){
+  const all=loadReviews();
+  const list=all[currentRamen.id]||[];
+  document.getElementById('reviewList').innerHTML = list.length
+    ? list.map(v=>`<div class="review-item">
+        <div class="head"><span class="who">${esc(v.n)}</span><span class="stars">${'⭐'.repeat(v.s)}</span></div>
+        <div class="txt">${esc(v.t)}</div><div class="date">${v.d}</div></div>`).join('')
+    : `<div class="review-empty">아직 후기가 없어요. 첫 후기의 주인공이 되어보세요! 🍜</div>`;
+}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+</script>
+</body>
+</html>
