@@ -4,18 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>오늘의 라면 — 내 취향 라면 찾기</title>
-<meta name="description" content="6가지 질문으로 찾는 내 취향 라면. 맛있게 끓이는 법과 꿀조합, 후기까지 한 번에.">
+<meta name="description" content="15가지 질문으로 찾는 내 취향 라면. 맛있게 끓이는 법과 꿀조합, 후기까지 한 번에.">
 
 <!-- 공유(OG) 메타 -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="오늘의 라면 — 6문항이면 답 나옴">
+<meta property="og:title" content="오늘의 라면 — 15문항이면 답 나옴">
 <meta property="og:description" content="국민 라면 18종 취향 테스트. 내 라면 찾고, 제일 맛있게 끓이는 법과 후기까지 한 그릇에 🍜">
 <meta property="og:url" content="https://jsh0529-beep.github.io/ramen/">
 <meta property="og:image" content="https://jsh0529-beep.github.io/ramen/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="오늘의 라면 — 6문항이면 답 나옴">
+<meta name="twitter:title" content="오늘의 라면 — 15문항이면 답 나옴">
 <meta name="twitter:description" content="국민 라면 18종 취향 테스트. 내 라면 찾고, 맛있게 끓이는 법과 후기까지 🍜">
 <meta name="twitter:image" content="https://jsh0529-beep.github.io/ramen/og.png">
 
@@ -219,7 +219,7 @@ footer{margin-top:34px;text-align:center;font-size:11px;color:rgba(251,243,228,.
   <section class="screen on" id="scr-intro">
     <div class="hero">
       <div class="steam">지금 판매 중인 국민 라면 18종</div>
-      <h2>오늘 뭐 끓이지?<br><span class="red">6문항</span>이면 답 나옴</h2>
+      <h2>오늘 뭐 끓이지?<br><span class="red">15문항</span>이면 답 나옴</h2>
       <p>국물파? 볶음파? 매운맛 한계는 어디까지?<br>취향을 고르면 딱 맞는 라면과<br>제일 맛있게 끓이는 법까지 알려드려요.</p>
       <div class="pot-visual">
         <div class="steam-lines">〜 〜 〜</div>
@@ -393,7 +393,11 @@ const RAMEN = [
   combo:"<b>닭가슴살 or 계란</b>을 더하면 든든한 한 끼. 김치보다 <b>단무지</b>가 의외로 잘 어울려요."}
 ];
 
-/* ═══════════ 퀴즈 ═══════════ */
+/* 면발 굵기 속성 */
+const NOODLE_TYPE={neoguri:'thick',jjam:'thick',chapa:'thick',bibim:'thin',teumsae:'thin'};
+RAMEN.forEach(r=>r.noodle=NOODLE_TYPE[r.id]||'mid');
+
+/* ═══════════ 퀴즈 (15문항) ═══════════ */
 const QUESTIONS = [
  {t:"라면 하면 떠오르는 그 장면, 당신의 라면은?",
   o:[
@@ -421,18 +425,73 @@ const QUESTIONS = [
    {e:"🦐", x:"시원한 해물·짬뽕 스타일", w:{base:{seafood:3}}},
    {e:"🧀", x:"짜장·크림처럼 고소하고 꾸덕한 맛", w:{base:{black:2,creamy:2}}}
   ]},
+ {t:"면발은 어떤 스타일이 좋아요?",
+  o:[
+   {e:"🐍", x:"오동통 굵은 면 — 씹는 맛이 있어야지", w:{noodle:{thick:2}}},
+   {e:"〰️", x:"표준 면발 — 익숙한 그 굵기", w:{noodle:{mid:2}}},
+   {e:"🧵", x:"가늘고 탱글한 면 — 후루룩 넘어가는 맛", w:{noodle:{thin:2}}}
+  ]},
+ {t:"라면 국물, 마지막엔 어떻게 해요?",
+  o:[
+   {e:"🥣", x:"국물 원샷 — 남기는 건 예의가 아니지", w:{form:{soup:1},rich:2}},
+   {e:"🥄", x:"몇 숟갈만 — 짜니까 적당히", w:{rich:3}},
+   {e:"🚫", x:"면만 건져 먹는 파 — 소스면이 낫겠다", w:{form:{stir:1},rich:4}}
+  ]},
+ {t:"라면 속 계란, 당신의 스타일은?",
+  o:[
+   {e:"🥚", x:"반숙 퐁당 — 노른자는 터뜨리지 마", w:{form:{soup:1}}},
+   {e:"🌪️", x:"휘휘 풀어서 계란탕처럼", w:{form:{soup:1},base:{savory:1}}},
+   {e:"🍳", x:"계란후라이 따로 부쳐서 올리기", w:{form:{stir:1}}},
+   {e:"✋", x:"노계란 — 라면 본연의 맛으로", w:{era:{classic:1}}}
+  ]},
+ {t:"라면에 밥, 어떻게 생각해요?",
+  o:[
+   {e:"🍚", x:"당연히 말아야지 — 국물밥이 완성형", w:{form:{soup:2},rich:1}},
+   {e:"🍙", x:"볶음면엔 밥 비비기 — 소스 한 방울도 안 남겨", w:{form:{stir:2},rich:1}},
+   {e:"🙅", x:"면은 면, 밥은 밥 — 섞지 않는다", w:{}}
+  ]},
+ {t:"치즈 추가에 대한 입장은?",
+  o:[
+   {e:"🧀", x:"무조건 추가 — 치즈는 진리", w:{base:{creamy:2}}},
+   {e:"🤏", x:"매운 라면에만 살짝", w:{spice:4}},
+   {e:"❌", x:"국물 라면에 치즈라니, 클래식을 지켜", w:{era:{classic:1},base:{spicy:1}}}
+  ]},
+ {t:"한여름 무더위, 그래도 라면이라면?",
+  o:[
+   {e:"🧊", x:"얼음물에 헹군 비빔면 — 여름엔 이거지", w:{form:{bibim:2},base:{sweet:2}}},
+   {e:"💦", x:"땀 흘리며 뜨거운 국물 — 이열치열", w:{form:{soup:2}}},
+   {e:"🍳", x:"불 앞은 싫고… 볶음면으로 간단히", w:{form:{stir:1}}}
+  ]},
+ {t:"편의점 라면 코너 앞, 당신의 손은?",
+  o:[
+   {e:"🆕", x:"신상 코너 직행 — 안 먹어본 게 죄", w:{era:{new:2}}},
+   {e:"🏆", x:"늘 먹던 그 라면 — 모험은 사양", w:{era:{classic:2}}},
+   {e:"👀", x:"1+1 행사 상품 — 실속이 먼저", w:{}}
+  ]},
+ {t:"해외에서 난리라는 K-라면, 어때요?",
+  o:[
+   {e:"🌍", x:"불닭 시리즈 — 세계인이 우는 그 맛", w:{base:{chicken:1,creamy:1},spice:1}},
+   {e:"🇰🇷", x:"그래도 원조는 국물 라면이지", w:{form:{soup:1},era:{classic:1}}},
+   {e:"🤔", x:"유행은 유행, 내 입맛은 내 입맛", w:{}}
+  ]},
+ {t:"라면 먹기 제일 좋은 시간은?",
+  o:[
+   {e:"🌅", x:"쓰린 아침 해장 — 시원한 국물로 부활", w:{form:{soup:2},base:{spicy:1},rich:2}},
+   {e:"☀️", x:"바쁜 점심 한 끼 — 든든하고 빠르게", w:{rich:3}},
+   {e:"🌙", x:"자정의 야식 — 오늘만 산다", w:{rich:4,spice:1}}
+  ]},
  {t:"신상 vs 클래식, 당신의 선택은?",
   o:[
    {e:"🏆", x:"검증된 스테디셀러 — 실패 없는 게 최고", w:{era:{classic:2}}},
    {e:"✨", x:"신상·화제작 먼저 도전하는 얼리어답터", w:{era:{new:3}}},
    {e:"🤷", x:"맛만 있으면 뭐든 OK", w:{}}
   ]},
- {t:"오늘 라면 먹는 상황은?",
+ {t:"마지막! 오늘의 기분은?",
   o:[
-   {e:"🌙", x:"야식 — 죄책감보다 맛이 먼저", w:{rich:1,spice:1}},
-   {e:"🍺", x:"해장 — 속 풀리는 시원한 국물", w:{form:{soup:2},base:{spicy:1}}},
-   {e:"👨‍👩‍👧", x:"가족 식사 — 다 같이 먹을 수 있는 맛", w:{spice:-2,era:{classic:1}}},
-   {e:"🎯", x:"혼밥 도전 — 궁금했던 그 라면 정복", w:{era:{new:2},spice:1}}
+   {e:"🫂", x:"위로가 필요해 — 부드럽고 따뜻한 게 좋아", w:{spice:1,base:{savory:1}}},
+   {e:"⚡", x:"스트레스 폭발 — 화끈하게 풀어야지", w:{spice:5}},
+   {e:"🎯", x:"새로운 자극이 필요해", w:{era:{new:2}}},
+   {e:"📼", x:"옛날 생각나는 날 — 추억의 맛이 그리워", w:{era:{classic:2},base:{savory:1}}}
   ]}
 ];
 const COOK_STAGES = [
@@ -440,20 +499,21 @@ const COOK_STAGES = [
  {ic:"🍜", lb:"면 넣기"},{ic:"🥚", lb:"계란 투하"},{ic:"🥢", lb:"완성!"}
 ];
 
-let qi=0, score={form:{soup:0,stir:0,bibim:0}, spice:[], rich:[], base:{}, era:{classic:0,new:0}};
+let qi=0, score={form:{soup:0,stir:0,bibim:0}, spice:[], rich:[], base:{}, era:{classic:0,new:0}, noodle:{}};
 let currentRamen=null, selStars=0;
 
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');window.scrollTo({top:0,behavior:'smooth'})}
 function goHome(){show('scr-intro')}
 
 function startQuiz(){
-  qi=0; score={form:{soup:0,stir:0,bibim:0}, spice:[], rich:[], base:{}, era:{classic:0,new:0}};
+  qi=0; score={form:{soup:0,stir:0,bibim:0}, spice:[], rich:[], base:{}, era:{classic:0,new:0}, noodle:{}};
   renderQ(); show('scr-quiz');
 }
 function renderQ(){
   const q=QUESTIONS[qi];
+  const stage=Math.min(COOK_STAGES.length-1, Math.floor(qi/QUESTIONS.length*COOK_STAGES.length));
   const steps=document.getElementById('cookSteps');
-  steps.innerHTML=COOK_STAGES.map((s,i)=>`<div class="cook-step ${i<qi?'done':i===qi?'now':''}"><span class="ic">${s.ic}</span><span class="lb">${s.lb}</span></div>`).join('');
+  steps.innerHTML=COOK_STAGES.map((s,i)=>`<div class="cook-step ${i<stage?'done':i===stage?'now':''}"><span class="ic">${s.ic}</span><span class="lb">${s.lb}</span></div>`).join('');
   document.getElementById('cookBarFill').style.width=(qi/QUESTIONS.length*100)+'%';
   document.getElementById('qNum').textContent=`STEP ${qi+1} / ${QUESTIONS.length}`;
   document.getElementById('qTitle').textContent=q.t;
@@ -466,6 +526,7 @@ function answer(i){
   if(typeof w.rich==='number') score.rich.push(w.rich);
   if(w.base) for(const k in w.base) score.base[k]=(score.base[k]||0)+w.base[k];
   if(w.era) for(const k in w.era) score.era[k]+=w.era[k];
+  if(w.noodle) for(const k in w.noodle) score.noodle[k]=(score.noodle[k]||0)+w.noodle[k];
   qi++;
   if(qi<QUESTIONS.length) renderQ(); else finish();
 }
@@ -480,6 +541,7 @@ function finish(){
     s-=Math.abs(r.rich-wantRich)*1.0;
     s+=(score.base[r.base]||0)*1.6;
     s+=(score.era[r.era]||0)*1.1;
+    s+=(score.noodle[r.noodle]||0)*1.2;
     s+=Math.random()*0.5; /* 동점 셔플 */
     return {r,s};
   }).sort((a,b)=>b.s-a.s);
