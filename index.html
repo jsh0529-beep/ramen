@@ -243,7 +243,7 @@ footer{margin-top:34px;text-align:center;font-size:11px;color:rgba(251,243,228,.
       <input type="text" id="rvName" maxlength="12" placeholder="닉네임 (선택)">
       <textarea id="rvText" rows="3" maxlength="300" placeholder="맛 평가, 나만의 조리 꿀팁을 남겨주세요"></textarea>
       <button class="btn small" onclick="submitReview()">후기 남기기</button>
-      <p class="storage-note">※ 후기는 이 브라우저에 저장돼요. 같은 기기에서 다시 방문하면 볼 수 있어요.</p>
+      <p class="storage-note" id="storageNote">※ 후기는 이 브라우저에 저장돼요.</p>
     </div>
     <div id="reviewList"></div>
 
@@ -492,13 +492,19 @@ function jumpTo(id){
   showResult(r,others);
 }
 
-/* ═══════════ 후기 (localStorage + 메모리 폴백) ═══════════ */
+/* ═══════════ 후기 (GAS 공유 백엔드 + localStorage 폴백) ═══════════
+   ① 함께 드린 gas-reviews.gs를 Google Apps Script에 붙여넣고
+   ② 배포 → 웹 앱 → 액세스 권한 '모든 사용자'로 배포한 뒤
+   ③ 발급된 URL을 아래 GAS_URL에 넣으면 모든 방문자가 후기를 공유합니다.
+   비워두면 자동으로 이 브라우저에만 저장되는 로컬 모드로 동작합니다. */
+const GAS_URL = "https://script.google.com/macros/s/AKfycbz2RN0mkTpg8mZAM1l6ONW0dsd24PQW0Rmp0j84SH62yhcg1zM_G9C-bxr-bLkuSsKl/exec";
+
 const memStore={};
-function loadReviews(){
+function localLoad(){
   try{ return JSON.parse(localStorage.getItem('ramen-reviews')||'{}'); }
   catch(e){ return memStore; }
 }
-function saveReviews(d){
+function localSave(d){
   try{ localStorage.setItem('ramen-reviews',JSON.stringify(d)); }
   catch(e){ Object.assign(memStore,d); }
 }
@@ -506,30 +512,60 @@ function renderStars(){
   document.getElementById('starRow').innerHTML=[1,2,3,4,5].map(i=>
     `<button class="star-btn ${i<=selStars?'sel':''}" aria-label="${i}점" onclick="selStars=${i};renderStars()">⭐</button>`).join('');
 }
-function submitReview(){
+async function submitReview(){
   const txt=document.getElementById('rvText').value.trim();
   if(!selStars){alert('별점을 먼저 골라주세요! ⭐');return}
   if(!txt){alert('후기를 한 줄이라도 남겨주세요 🙏');return}
   const name=document.getElementById('rvName').value.trim()||'익명의 라면러';
-  const all=loadReviews();
-  if(!all[currentRamen.id]) all[currentRamen.id]=[];
-  all[currentRamen.id].unshift({n:name,s:selStars,t:txt,d:new Date().toLocaleDateString('ko-KR')});
-  all[currentRamen.id]=all[currentRamen.id].slice(0,30);
-  saveReviews(all);
+  const btn=document.querySelector('.review-form .btn');
+  btn.disabled=true; btn.textContent='등록 중...';
+  const entry={n:name,s:selStars,t:txt,d:new Date().toLocaleDateString('ko-KR')};
+  if(GAS_URL){
+    try{
+      /* Content-Type 미지정(text/plain) POST → GAS CORS 프리플라이트 회피 */
+      await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'add',ramen:currentRamen.id,...entry})});
+    }catch(e){ saveLocalEntry(entry); }
+  }else{
+    saveLocalEntry(entry);
+  }
   selStars=0; renderStars();
   document.getElementById('rvName').value=''; document.getElementById('rvText').value='';
+  btn.disabled=false; btn.textContent='후기 남기기';
   renderReviews();
 }
-function renderReviews(){
-  const all=loadReviews();
-  const list=all[currentRamen.id]||[];
-  document.getElementById('reviewList').innerHTML = list.length
+function saveLocalEntry(entry){
+  const all=localLoad();
+  if(!all[currentRamen.id]) all[currentRamen.id]=[];
+  all[currentRamen.id].unshift(entry);
+  all[currentRamen.id]=all[currentRamen.id].slice(0,30);
+  localSave(all);
+}
+async function renderReviews(){
+  const box=document.getElementById('reviewList');
+  let list=[];
+  if(GAS_URL){
+    box.innerHTML=`<div class="review-empty">후기 불러오는 중... 🍜</div>`;
+    try{
+      const res=await fetch(GAS_URL+'?action=list&ramen='+encodeURIComponent(currentRamen.id));
+      list=await res.json();
+    }catch(e){
+      list=(localLoad()[currentRamen.id])||[];
+    }
+  }else{
+    list=(localLoad()[currentRamen.id])||[];
+  }
+  box.innerHTML = list.length
     ? list.map(v=>`<div class="review-item">
-        <div class="head"><span class="who">${esc(v.n)}</span><span class="stars">${'⭐'.repeat(v.s)}</span></div>
-        <div class="txt">${esc(v.t)}</div><div class="date">${v.d}</div></div>`).join('')
+        <div class="head"><span class="who">${esc(String(v.n))}</span><span class="stars">${'⭐'.repeat(Math.max(1,Math.min(5,v.s|0)))}</span></div>
+        <div class="txt">${esc(String(v.t))}</div><div class="date">${esc(String(v.d||''))}</div></div>`).join('')
     : `<div class="review-empty">아직 후기가 없어요. 첫 후기의 주인공이 되어보세요! 🍜</div>`;
 }
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('storageNote').textContent = GAS_URL
+    ? '※ 후기는 모든 방문자에게 공개돼요. 따뜻한 후기 부탁드려요 🙂'
+    : '※ 후기는 이 브라우저에 저장돼요. (GAS 연동 시 전체 공유로 전환)';
+});
 </script>
 </body>
 </html>
