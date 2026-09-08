@@ -1,0 +1,129 @@
+# '신비한 건축사전' 맞춤형 주제 DB
+# - 각 항목의 outline은 오프라인(LLM 미사용) 모드에서 대본의 뼈대로 쓰입니다.
+# - facts_to_verify 항목은 반드시 1단계 교차 검증을 통과해야 대본에서 "확인된 사실"로 취급됩니다.
+topics:
+  - id: sinseoldong_ghost_station
+    title: "서울 지하철 노선도에 없는 신설동 '유령역', 50년째 닫힌 문 열어보니"
+    subtitle: "1974년 건설 직후 방치된 지하 3층 공간… 설계 변경이 낳은 도심 속 건축 미스터리"
+    aliases: ["신설동 유령역", "신설동역 유령 승강장", "50년째 굳게 닫힌 신설동 '유령역'"]
+    summary: >
+      1974년 서울 지하철 1호선 개통 당시 지어졌으나, 노선 변경으로 한 번도 쓰이지 않고
+      폐쇄된 신설동역 지하 3층 공간의 건축적 비밀과 방치된 이유.
+    keywords: ["신설동역", "유령역", "서울 지하철 1호선", "폐쇄 승강장", "지하철 역사"]
+    search_terms: ["신설동역", "서울 지하철 1호선"]
+    commons_queries: ["Sinseol-dong station", "Seoul Metro Line 1 1974", "Seoul subway 1970s"]
+    khs_names: []
+    facts_to_verify: ["1974년", "지하 3층"]
+    outline:
+      intro:
+        heading: "노선도에 없는 승강장"
+        mood: mystery
+        visual_query: "Sinseol-dong station platform"
+        sentences:
+          - "서울 지하철 1호선과 2호선이 만나는 신설동역. 그런데 이 역에는 어떤 노선도에도 표시되지 않은 승강장이 하나 더 있습니다."
+          - "지하 3층, 굳게 닫힌 문 너머의 공간은 왜 반세기 가까이 승객을 맞이하지 못했을까요."
+      development:
+        heading: "1974년, 미래를 위해 미리 지은 공간"
+        mood: neutral
+        visual_query: "Seoul subway construction 1970s"
+        sentences:
+          - "1974년 서울 지하철 1호선이 개통하던 무렵, 신설동역은 앞으로 연결될 다른 노선을 염두에 두고 여분의 승강장을 함께 지었습니다."
+          - "당시 계획에 따라 미리 구조물을 만들어 두는 것은 훗날의 공사비와 도심 혼란을 줄이기 위한 선택이었습니다."
+      crisis:
+        heading: "바뀐 계획, 남겨진 구조물"
+        mood: tragic
+        visual_query: "abandoned subway platform"
+        sentences:
+          - "그러나 이후 노선 계획이 바뀌면서 이 승강장을 지나갈 예정이던 열차는 다른 경로로 향하게 되었습니다."
+          - "이미 완성된 콘크리트 구조물은 철거하기에도, 활용하기에도 애매한 상태로 남겨졌습니다."
+      resolution:
+        heading: "오늘의 유령역"
+        mood: grand
+        visual_query: "Sinseol-dong station today"
+        sentences:
+          - "현재 이 공간은 일반 승객에게 개방되지 않은 채 열차 회차와 촬영 장소 등으로 제한적으로 쓰이고 있습니다."
+          - "설계 변경이 남긴 지하 공간은 도시 계획이 어떻게 건축물의 운명을 바꾸는지 보여주는 살아있는 기록입니다."
+
+  - id: sungnyemun_restoration
+    title: "숭례문 화재 그 후, 전통 방식 고집이 불러온 문화재 복원의 딜레마"
+    subtitle: "목재 건조부터 단청 원료까지… 현대 건축 기술과 전통의 충돌이 남긴 과제"
+    aliases: ["국보 1호 숭례문, 복원의 딜레마", "숭례문 복원", "숭례문 화재"]
+    summary: >
+      2008년 화재 이후 전통 방식으로 복원하려 했으나, 단청 박락 등 현대와 과거의 건축 기술 충돌로
+      인해 발생했던 기술적 한계와 치열한 논쟁 과정.
+    keywords: ["숭례문", "남대문", "문화재 복원", "단청", "2008년 화재", "전통 건축"]
+    search_terms: ["숭례문", "숭례문 방화 사건", "숭례문 복구"]
+    commons_queries: ["Sungnyemun", "Namdaemun 1900s", "Sungnyemun fire 2008"]
+    khs_names: ["서울 숭례문"]
+    facts_to_verify: ["2008년", "2013년"]
+    outline:
+      intro:
+        heading: "다시 세워진 문 앞에서"
+        mood: mystery
+        visual_query: "Sungnyemun gate Seoul"
+        sentences:
+          - "서울 한복판에 서 있는 숭례문. 조선의 도성 정문이자 오랫동안 국보 1호로 불려온 건축물입니다."
+          - "그런데 복원된 지 몇 달 만에 단청이 벗겨지기 시작했다는 소식이 전해졌습니다. 무엇이 문제였을까요."
+      development:
+        heading: "2008년 2월, 화재"
+        mood: tragic
+        visual_query: "Namdaemun fire 2008"
+        sentences:
+          - "2008년 2월, 방화로 시작된 불은 숭례문의 목조 누각 대부분을 태웠습니다."
+          - "정부는 최대한 전통 재료와 전통 기법을 사용해 원형에 가깝게 복원하겠다는 원칙을 세웠습니다."
+      crisis:
+        heading: "전통과 현대의 충돌"
+        mood: tragic
+        visual_query: "Korean traditional dancheong painting"
+        sentences:
+          - "복원 과정에서는 목재의 건조 기간, 전통 안료와 아교의 배합, 기와 제작 방식까지 하나하나가 논쟁의 대상이 되었습니다."
+          - "2013년 복원 완료 이후 단청이 갈라지고 떨어지는 박락 현상이 확인되면서, 전통 방식의 한계와 검증 부족이 함께 지적되었습니다."
+      resolution:
+        heading: "복원이 남긴 질문"
+        mood: grand
+        visual_query: "Sungnyemun night Seoul"
+        sentences:
+          - "이후 단청은 다시 보수되었고, 전통 기법과 현대 과학을 어떻게 결합할 것인가에 대한 논의가 이어지고 있습니다."
+          - "숭례문의 복원은 문화재를 되살리는 일이 단순한 재건축이 아니라, 시간을 다루는 기술이라는 사실을 보여줍니다."
+
+  - id: national_assembly_dome
+    title: "여의도 국회의사당 돔 지붕, 원래 설계도에는 없었다"
+    subtitle: "건축가의 반대에도 올려진 1000톤의 구리 지붕… 한국 현대 건축의 씁쓸한 이면"
+    aliases: ["여의도 국회의사당 돔 지붕의 비밀", "국회의사당 돔", "국회의사당 돔 지붕"]
+    summary: >
+      본래 돔이 없는 평지붕으로 설계되었으나, 웅장함이 부족하다는 요구로 인해 억지로 얹혀진
+      구리 돔 지붕의 건축 비화.
+    keywords: ["국회의사당", "여의도", "돔 지붕", "한국 현대 건축", "1975년"]
+    search_terms: ["국회의사당 (대한민국)", "여의도 국회의사당"]
+    commons_queries: ["National Assembly Building Korea", "Yeouido 1970s", "National Assembly Seoul dome"]
+    khs_names: []
+    facts_to_verify: ["1975년", "1000톤"]
+    outline:
+      intro:
+        heading: "설계도에 없던 지붕"
+        mood: mystery
+        visual_query: "National Assembly Building Seoul"
+        sentences:
+          - "여의도 한강변에 자리한 국회의사당. 초록빛 돔 지붕은 이 건물을 상징하는 이미지가 되었습니다."
+          - "그런데 처음 그려진 설계도에는 이 돔이 없었다고 합니다. 어떻게 된 일일까요."
+      development:
+        heading: "1960년대 말, 새로운 의사당"
+        mood: neutral
+        visual_query: "Yeouido construction 1970s"
+        sentences:
+          - "1960년대 말 정부는 여의도에 새 국회의사당을 짓기로 하고 여러 건축가가 참여하는 설계를 진행했습니다."
+          - "당시 안은 돔 없이 수평선을 강조한 평지붕 형태로, 한국 현대 건축의 흐름을 반영한 것이었습니다."
+      crisis:
+        heading: "웅장함을 요구하다"
+        mood: tragic
+        visual_query: "architectural drawing dome"
+        sentences:
+          - "그러나 건물이 국가를 상징하기에는 위엄이 부족하다는 요구가 제기되었고, 건축가들의 반대에도 돔을 얹는 방향으로 설계가 수정되었습니다."
+          - "그 결과 1975년 완공된 의사당은 애초 의도와 다른, 돔과 열주가 결합된 모습으로 세워졌습니다."
+      resolution:
+        heading: "오늘의 돔이 말하는 것"
+        mood: grand
+        visual_query: "National Assembly Building Korea aerial"
+        sentences:
+          - "오늘날 국회의사당의 돔은 세월이 흐르며 녹청색으로 변해 여의도의 풍경에 자리 잡았습니다."
+          - "설계자의 뜻과 발주자의 요구가 충돌했던 이 지붕은 한국 현대 건축이 지나온 시대를 조용히 증언하고 있습니다."
