@@ -1,0 +1,19 @@
+# 핵심 (오프라인 모드까지 필요한 최소 의존성)
+requests>=2.31
+pyyaml>=6.0
+python-dotenv>=1.0
+numpy>=1.26
+pillow>=10.0
+moviepy>=2.1
+imageio-ffmpeg>=0.5
+
+# 1단계: 대본 작성 (Gemini via LangChain) — GEMINI_API_KEY 필요
+langchain>=0.2
+langchain-google-genai>=1.0
+
+# 4단계: 자막 (선택, 미설치 시 대본 기반 타이밍으로 대체)
+# openai-whisper>=20231117
+
+# 5단계: 유튜브 업로드 (선택, --publish 시 필요)
+# google-api-python-client>=2.100
+# google-auth-oauthlib>=1.2
