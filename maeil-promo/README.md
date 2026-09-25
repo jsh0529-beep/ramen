@@ -37,6 +37,7 @@
 ```bash
 ./fetch_fonts.sh                 # Noto Serif KR / Noto Sans KR 내려받기 (fonts/, git 제외)
 python3 audio.py                 # soundtrack.wav 합성 (numpy)
+ln -sf "$(npm root -g)" node_modules  # 전역 playwright 연결
 node render.mjs frames/v.mp4 30  # scene.html 을 프레임 단위 캡처 → H.264 (Playwright + ffmpeg)
 ffmpeg -i frames/v.mp4 -i soundtrack.wav -c:v copy -c:a aac -b:a 192k -shortest maeil_promo.mp4
 ```
