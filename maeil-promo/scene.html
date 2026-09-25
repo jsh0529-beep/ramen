@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>매일신문 홍보영상 — 멈춰서 읽는 시간</title>
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+:root{
+  --ink:#16140f;
+  --paper:#efe8da;
+  --paper-old:#e3d6bb;
+  --red:#b3261e;
+  --screen:#0b0c10;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1920px;height:1080px;overflow:hidden;background:#000}
+body{font-family:'Noto Sans KR',sans-serif;color:var(--ink)}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:#000}
+.layer{position:absolute;inset:0;opacity:0}
+.serif{font-family:'Noto Serif KR',serif}
+.center{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.cue{position:absolute;opacity:0;will-change:opacity,transform}
+
+/* ── 1. 피드 홍수 ── */
+#feed{background:var(--screen)}
+#feedCols{position:absolute;inset:-200px -40px;display:flex;gap:28px;justify-content:center}
+.col{width:340px;position:relative}
+.card{position:absolute;left:0;width:340px;height:132px;border-radius:18px;background:#1a1c23;
+  border:1px solid #262933;padding:18px 20px;color:#e9eaee;overflow:hidden}
+.card .src{font-size:15px;color:#8a8f9c;display:flex;justify-content:space-between;margin-bottom:8px}
+.card .tt{font-size:22px;font-weight:700;line-height:1.3;letter-spacing:-.02em}
+.card.hot .tt{color:#ff5a4e}
+.card .badge{position:absolute;right:16px;bottom:14px;font-size:13px;padding:3px 9px;border-radius:99px;background:#2b2e38;color:#b6bac6}
+#feedShade{position:absolute;inset:0;background:radial-gradient(ellipse 60% 55% at 50% 50%, rgba(11,12,16,.92), rgba(11,12,16,.35) 70%, rgba(11,12,16,.1))}
+#feedText{position:absolute;inset:0}
+#feedText .cue{left:0;right:0;top:470px;text-align:center;color:#fff;font-size:64px;font-weight:700;letter-spacing:-.03em}
+#counter{position:absolute;top:60px;right:80px;color:#ff5a4e;font:700 28px 'Noto Sans KR';letter-spacing:.02em;opacity:0}
+
+/* ── 2. 암전 ── */
+#black{background:#000}
+#black .cue{left:0;right:0;top:500px;text-align:center;color:#d8d4cc;font-size:46px;font-weight:300;letter-spacing:-.01em}
+
+/* ── 3~5. 종이 ── */
+#paper{background:#000}
+#sheet{position:absolute;left:0;top:0;width:1920px;height:1080px;background:var(--paper);transform-origin:50% 0;
+  box-shadow:0 40px 120px rgba(0,0,0,.6)}
+.grain{position:absolute;inset:0;pointer-events:none;mix-blend-mode:multiply;opacity:.55;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .45  0 0 0 0 .40  0 0 0 0 .32  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+.vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 75% 70% at 50% 50%, transparent 55%, rgba(60,40,10,.28))}
+.masthead{position:absolute;left:120px;right:120px;top:70px;border-bottom:3px double var(--ink);padding-bottom:14px;
+  display:flex;justify-content:space-between;align-items:flex-end;font-size:20px;letter-spacing:.08em;color:#3b362c}
+.masthead b{font-family:'Noto Serif KR';font-weight:900;font-size:34px;letter-spacing:.3em;color:var(--ink)}
+.rule{position:absolute;left:120px;right:120px;height:1px;background:rgba(22,20,15,.35)}
+.pcue{position:absolute;left:0;right:0;text-align:center;opacity:0}
+.big{font-family:'Noto Serif KR';font-weight:900;font-size:92px;letter-spacing:-.03em;line-height:1.2}
+.mid{font-family:'Noto Serif KR';font-weight:700;font-size:58px;letter-spacing:-.03em;line-height:1.35}
+.small{font-size:30px;color:#4a4436;line-height:1.6}
+.foot{position:absolute;left:120px;right:120px;bottom:64px;font-size:19px;color:#6b6352;letter-spacing:.01em;opacity:0;
+  border-top:1px solid rgba(22,20,15,.3);padding-top:14px}
+.num{font-family:'Noto Serif KR';font-weight:900;font-size:220px;letter-spacing:-.04em;line-height:1;color:var(--ink)}
+.num small{font-size:60px;font-weight:700;margin-left:10px}
+.redline{position:absolute;height:6px;background:var(--red);left:50%;transform:translateX(-50%)}
+
+/* 불 꺼지는 도시 */
+#city{position:absolute;left:260px;right:260px;top:210px;height:420px}
+.dot{position:absolute;width:12px;height:12px;border-radius:50%;background:#e2a93b;box-shadow:0 0 14px 4px rgba(226,169,59,.55)}
+
+/* ── 6~10. 역사 ── */
+#hist{background:#15120d}
+#histSheet{position:absolute;inset:0;background:var(--paper-old)}
+.year{position:absolute;left:0;right:0;top:250px;text-align:center;font-family:'Noto Serif KR';font-weight:900;
+  font-size:250px;letter-spacing:-.02em;color:var(--ink);opacity:0;line-height:1}
+.hcue{position:absolute;left:0;right:0;text-align:center;opacity:0}
+.editorial{position:absolute;left:50%;top:170px;width:760px;margin-left:-380px;height:720px;border:2px solid var(--ink);
+  padding:44px 56px;opacity:0;background:rgba(239,232,218,.5)}
+.editorial .head{font-family:'Noto Serif KR';font-weight:900;font-size:25px;letter-spacing:.4em;border-bottom:2px solid var(--ink);padding-bottom:12px;margin-bottom:24px}
+.editorial .ttl{font-family:'Noto Serif KR';font-weight:900;font-size:60px;line-height:1.28;letter-spacing:-.04em;margin-bottom:28px}
+.editorial .bars div{height:15px;background:rgba(22,20,15,.2);margin-bottom:17px;border-radius:2px}
+.crack{position:absolute;inset:0;opacity:0;pointer-events:none}
+#march{position:absolute;left:0;right:0;top:560px;height:220px;overflow:hidden;opacity:0}
+.walker{position:absolute;bottom:0;width:46px}
+.walker i{display:block;width:30px;height:30px;border-radius:50%;background:var(--ink);margin:0 auto 6px}
+.walker b{display:block;width:46px;height:110px;border-radius:22px 22px 6px 6px;background:var(--ink)}
+
+/* ── 11. 결론 ── */
+#end{background:var(--paper)}
+#end .ecue{position:absolute;left:0;right:0;text-align:center;opacity:0}
+#logo{position:absolute;left:0;right:0;top:330px;text-align:center;opacity:0}
+#logo .w{font-family:'Noto Serif KR';font-weight:900;font-size:190px;letter-spacing:.06em;line-height:1}
+#logo .h{font-family:'Noto Serif KR';font-weight:700;font-size:40px;letter-spacing:1.2em;margin-top:26px;color:#3b362c;padding-left:1.2em}
+#logo .bar{width:0;height:5px;background:var(--red);margin:40px auto 0}
+#tag{position:absolute;left:0;right:0;top:780px;text-align:center;opacity:0}
+#tag .a{font-family:'Noto Serif KR';font-weight:700;font-size:46px;letter-spacing:-.02em}
+#tag .b{font-size:24px;color:#5a5344;margin-top:18px;letter-spacing:.06em}
+#fade{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none}
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- 1. 피드 홍수 -->
+  <div class="layer" id="feed">
+    <div id="feedCols"></div>
+    <div id="feedShade"></div>
+    <div id="counter"></div>
+    <div id="feedText">
+      <div class="cue" data-in="1.2" data-out="5.2">오늘 하루, 당신을 스쳐 간 뉴스.</div>
+      <div class="cue" data-in="5.6" data-out="10.5">그중 무엇이 <span style="color:#ff5a4e">사실</span>이었을까요?</div>
+    </div>
+  </div>
+
+  <!-- 2. 암전 -->
+  <div class="layer" id="black">
+    <div class="cue" data-in="11.4" data-out="15.4">빠르게 흘러간 것은, 빠르게 사라집니다.</div>
+  </div>
+
+  <!-- 3~5. 종이 -->
+  <div class="layer" id="paper">
+    <div id="sheet">
+      <div class="masthead"><b>每日新聞</b><span>2026년 9월 25일 금요일</span></div>
+      <!-- 3. 종이는 흘러가지 않는다 -->
+      <div class="pcue big" style="top:300px" data-in="17.4" data-out="23.6">신문은 흘러가지 않습니다.</div>
+      <div class="pcue small" style="top:470px" data-in="19.2" data-out="23.6">한 번 찍힌 활자는 지울 수도, 몰래 고칠 수도 없습니다.</div>
+      <div class="pcue mid" style="top:560px" data-in="20.8" data-out="23.6">그래서 찍기 전에, <span style="color:var(--red)">묻고 또 확인합니다.</span></div>
+
+      <!-- 4. 종이로 읽는 뇌 -->
+      <div class="pcue" style="top:190px" data-in="24.2" data-out="34"><div class="num"><span id="n1">0</span><small>개의 연구</small></div></div>
+      <div class="pcue" style="top:430px" data-in="25.4" data-out="34"><div class="num" style="font-size:150px"><span id="n2">0</span><small>명</small></div></div>
+      <div class="pcue mid" style="top:640px" data-in="27.6" data-out="34">같은 글이라도, <span style="color:var(--red)">종이로 읽을 때</span><br>더 깊이 이해했습니다.</div>
+      <div class="foot" id="foot1" data-in="25.4" data-out="34">Delgado 외 (2018), 「Don't throw away your printed books」, Educational Research Review — 54편 연구·171,055명 메타분석. 설명·정보 글에서 종이 읽기의 이해도가 더 높게 나타남.</div>
+
+      <!-- 5. 불 꺼지는 도시 -->
+      <div id="city"></div>
+      <div class="pcue mid" style="top:640px" data-in="35.4" data-out="40.2">지역신문이 문을 닫은 도시에서는</div>
+      <div class="pcue mid" style="top:640px" data-in="40.6" data-out="45.8">지방정부가 돈을 빌리는 <span style="color:var(--red)">비용이 올랐습니다.</span></div>
+      <div class="pcue small" style="top:760px" data-in="42.2" data-out="45.8">감시하는 눈이 사라지면, 그 값은 시민이 치릅니다.</div>
+      <div class="foot" id="foot2" data-in="36" data-out="45.8">Gao, Lee &amp; Murphy (2020), 「Financing Dies in Darkness?」, Journal of Financial Economics — 미국 지역신문 폐간 이후 해당 지역 지방채 발행 비용 상승.</div>
+
+      <div class="grain"></div><div class="vignette"></div>
+    </div>
+  </div>
+
+  <!-- 6~10. 역사 -->
+  <div class="layer" id="hist">
+    <div id="histSheet">
+      <div class="masthead"><b>每日新聞</b><span>1946 — 2026</span></div>
+
+      <div class="hcue mid" style="top:430px" data-in="46.6" data-out="51.4">그 눈이, 대구·경북에는</div>
+      <div class="hcue big" style="top:420px;font-size:120px" data-in="51.6" data-out="55.6"><span style="color:var(--red)">80년</span> 동안 떠 있었습니다.</div>
+
+      <!-- 1946 -->
+      <div class="year" id="y1946" data-in="56" data-out="63.6">1946. 3. 1.</div>
+      <div class="hcue mid" style="top:580px" data-in="57.4" data-out="63.6">대구 대안동, 「남선경제신문」 첫 호.</div>
+      <div class="hcue small" style="top:700px" data-in="59" data-out="63.6">해방 이듬해, 매일신문의 첫 아침이 인쇄되었습니다.</div>
+
+      <!-- 1955 -->
+      <div class="editorial" id="edi" data-in="64" data-out="70.4">
+        <div class="head">社說 · 1955. 9. 13.</div>
+        <div class="ttl">학도를 도구로<br>이용하지 말라</div>
+        <div class="bars"><div style="width:100%"></div><div style="width:96%"></div><div style="width:100%"></div><div style="width:88%"></div><div style="width:98%"></div><div style="width:92%"></div><div style="width:100%"></div><div style="width:64%"></div></div>
+      </div>
+      <div class="hcue small" style="top:920px" data-in="65.4" data-out="70.4">학생들을 정치 행사에 동원하던 권력을 향해, 주필 최석채가 쓴 사설.</div>
+      <svg class="crack" id="crack" viewBox="0 0 1920 1080"><path d="M1010 120 L940 330 L1040 420 L900 640 L1010 760 L930 1000" fill="none" stroke="#b3261e" stroke-width="10"/><path d="M940 330 L760 380 M1040 420 L1220 470 M900 640 L700 700" fill="none" stroke="#b3261e" stroke-width="5"/></svg>
+      <div class="hcue mid" style="top:400px" data-in="71.7" data-out="74.4">이튿날, 괴한들이 신문사를 습격해<br>제작 시설을 부쉈습니다.</div>
+      <div class="hcue big" style="top:420px" data-in="74.6" data-out="78.2">그러나 펜은 꺾이지 않았습니다.</div>
+
+      <!-- 1960 -->
+      <div class="year" id="y1960" style="top:170px" data-in="78.6" data-out="86">1960. 2. 28.</div>
+      <div id="march" data-in="79" data-out="86"></div>
+      <div class="hcue mid" style="top:430px" data-in="80" data-out="86">독재에 맞서 거리로 나선 대구의 고등학생들.</div>
+      <div class="hcue small" style="top:820px" data-in="81.6" data-out="86">그 행진은 신문사 앞을 지났고, 신문은 그날을 기록했습니다.</div>
+
+      <div class="grain"></div><div class="vignette"></div>
+    </div>
+  </div>
+
+  <!-- 11. 결론 -->
+  <div class="layer" id="end">
+    <div class="ecue mid" style="top:360px" data-in="86.6" data-out="94.2">알고리즘은 당신이 <b>좋아할 것</b>을 보여줍니다.</div>
+    <div class="ecue mid" style="top:520px" data-in="88.8" data-out="94.2">신문은 당신이 <b style="color:var(--red)">알아야 할 것</b>을 보여줍니다.</div>
+    <div id="logo" data-in="95" data-out="200">
+      <div class="w">매일신문</div>
+      <div class="h">每日新聞</div>
+      <div class="bar" id="logobar"></div>
+    </div>
+    <div id="tag" data-in="97" data-out="200">
+      <div class="a">빠른 세상일수록, 깊이 읽는 신문</div>
+      <div class="b">1946 — 2026 · 대구·경북의 아침을 기록한 80년</div>
+    </div>
+    <div class="grain"></div><div class="vignette"></div>
+  </div>
+
+  <div id="fade"></div>
+</div>
+
+<script>
+// ───────── 유틸 ─────────
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const ease=x=>{x=clamp(x);return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2};
+const easeOut=x=>1-Math.pow(1-clamp(x),3);
+const lerp=(a,b,t)=>a+(b-a)*t;
+function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+// 구간 [a,b] 에서 fade in/out 가시도
+function vis(t,a,b,fi=.6,fo=.5){if(t<a||t>b)return 0;return Math.min(clamp((t-a)/fi),clamp((b-t)/fo))}
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+
+// ───────── 피드 카드 생성 (특정 매체·인물 아님, 전형적인 피드 문구) ─────────
+const TITLES=[
+ ['[속보] 충격… 결국 이렇게 됐다',1],['이거 보면 생각 바뀜',0],['AI가 만든 영상, 진짜일까?',0],['“확인되지 않은 정보입니다”',0],
+ ['지금 난리 난 그 사진',1],['3초 요약: 모르면 손해',0],['삭제된 게시물입니다',0],['[단독?] 출처: 온라인 커뮤니티',1],
+ ['당신이 좋아할 만한 영상',0],['전문가 “절대 하지 마세요”',1],['댓글 9,999+ 폭발',0],['이 가격 실화? (광고)',0],
+ ['조작 논란… 원본은 어디에',1],['알고리즘 추천 #37',0],['ㄷㄷ 이게 진짜라고?',0],['퍼나르기 금지(?)',0],
+ ['[긴급] 공유해 주세요',1],['제목만 봐도 소름',0],['팩트 아님 주의',0],['자동 번역된 게시물',0]
+];
+const SRCS=['추천','실시간','인기','알 수 없음','공유됨','광고','숏폼','커뮤니티'];
+const BADGES=['조회 1.2M','공유 48K','방금','2초 전','🔥 급상승','출처 없음','AI 생성?','댓글 12K'];
+const cols=$('#feedCols'), CARDH=150, NCARD=14; const feedCards=[];
+{const r=rng(7);
+ for(let c=0;c<5;c++){const col=document.createElement('div');col.className='col';cols.appendChild(col);
+  for(let i=0;i<NCARD;i++){const [tt,hot]=TITLES[Math.floor(r()*TITLES.length)];
+   const d=document.createElement('div');d.className='card'+(hot?' hot':'');
+   d.innerHTML=`<div class="src"><span>${SRCS[Math.floor(r()*SRCS.length)]}</span><span>•••</span></div><div class="tt">${tt}</div><div class="badge">${BADGES[Math.floor(r()*BADGES.length)]}</div>`;
+   col.appendChild(d);feedCards.push({el:d,c,i,phase:r()});}
+ }}
+
+// ───────── 불 꺼지는 도시 ─────────
+const dots=[];
+{const r=rng(3),city=$('#city');
+ for(let i=0;i<120;i++){const d=document.createElement('div');d.className='dot';
+  // 몇 개의 군집(도시)으로 배치
+  const cx=[.15,.38,.62,.85,.5][i%5], cy=[.5,.3,.6,.35,.8][i%5];
+  const x=(cx+(r()-.5)*.22)*1400, y=(cy+(r()-.5)*.4)*420;
+  d.style.left=x+'px';d.style.top=y+'px';city.appendChild(d);dots.push({el:d,off:35.6+r()*9.5,keep:(i%5===4)});}
+}
+
+// ───────── 행진 ─────────
+const walkers=[];
+{const m=$('#march'),r=rng(11);
+ for(let i=0;i<34;i++){const w=document.createElement('div');w.className='walker';w.innerHTML='<i></i><b></b>';
+  const s=.7+r()*.45;w.style.transform=`scale(${s})`;w.style.transformOrigin='bottom';m.appendChild(w);walkers.push({el:w,x:i*72+r()*30,s,ph:r()*6});}
+}
+
+// ───────── 레이어 구간 ─────────
+const LAYERS={feed:[0,10.9],black:[10.9,15.9],paper:[15.9,46.2],hist:[46.2,86.2],end:[86.2,200]};
+
+function cues(t,sel){ $$(sel).forEach(el=>{const a=+el.dataset.in,b=+el.dataset.out;const v=vis(t,a,b,.7,.5);
+  el.style.opacity=v; el.style.transform=`translateY(${(1-easeOut(clamp((t-a)/.9)))*18}px)`;});}
+
+// ───────── 메인 렌더 ─────────
+window.render=function(t){
+  for(const [id,[a,b]] of Object.entries(LAYERS)) $('#'+id).style.opacity=(t>=a&&t<b)?1:0;
+
+  // 1. 피드 — 점점 빨라지는 스크롤
+  if(t<11){
+    const off=40*t+22*t*t*t/3;  // 가속
+    for(const k of feedCards){const dir=(k.c%2?1:1.25);
+      let y=((k.i*CARDH - off*dir - k.phase*300)%(NCARD*CARDH)+NCARD*CARDH)%(NCARD*CARDH)-CARDH;
+      k.el.style.transform=`translateY(${y}px)`;}
+    const blur=clamp((t-5)/5)*6; cols.style.filter=`blur(${blur}px)`;
+    cols.style.transform=`scale(${1+clamp((t-6)/4.5)*.18}) rotate(${Math.sin(t*9)*clamp((t-8)/2.5)*.8}deg)`;
+    const cnt=Math.floor(Math.pow(t/10.5,2.2)*4800);
+    $('#counter').textContent=`오늘 본 콘텐츠 ${cnt.toLocaleString()}개`;
+    $('#counter').style.opacity=clamp((t-.8)/.6);
+    cues(t,'#feedText .cue');
+  }
+  // 2. 암전
+  cues(t,'#black .cue');
+
+  // 3~5. 종이 내려앉기
+  if(t>=15.9&&t<46.2){
+    const p=clamp((t-15.9)/1.6); const e=easeOut(p);
+    $('#sheet').style.transform=`translateY(${lerp(-1150,0,e)}px) rotateX(${lerp(12,0,e)}deg) rotate(${lerp(-2.2,0,e)}deg)`;
+    cues(t,'#sheet .pcue');
+    ['#foot1','#foot2'].forEach(s=>{const el=$(s);el.style.opacity=vis(t,+el.dataset.in,+el.dataset.out,.8,.5)*.95});
+    $('#n1').textContent=Math.round(easeOut((t-24.2)/1.6)*54);
+    $('#n2').textContent=Math.round(easeOut((t-25.4)/2.0)*171055).toLocaleString();
+    const cv=vis(t,34.4,45.8,.8,.5); $('#city').style.opacity=cv;
+    for(const d of dots){const on=d.keep?1:clamp(1-(t-d.off)/.35);d.el.style.opacity=.15+.85*on;
+      d.el.style.background=on>.5?'#e2a93b':'#8c8472';d.el.style.boxShadow=on>.5?`0 0 ${14*on}px ${4*on}px rgba(226,169,59,${.55*on})`:'none';}
+  }
+
+  // 6~10. 역사
+  if(t>=46.2&&t<86.2){
+    const hs=$('#histSheet'); hs.style.opacity=clamp((t-46.2)/.8);
+    cues(t,'#histSheet .hcue');
+    $$('.year').forEach(el=>{const a=+el.dataset.in,b=+el.dataset.out;el.style.opacity=vis(t,a,b,.4,.5);
+      const s=lerp(1.25,1,easeOut((t-a)/.5)); el.style.transform=`scale(${s})`; el.style.letterSpacing=`${lerp(.1,-.02,easeOut((t-a)/1.2))}em`;});
+    // 1946 연도는 아래로 조금 비켜 줌
+    const edi=$('#edi'); const ev=vis(t,64,70.4,.6,.2); edi.style.opacity=ev;
+    // 습격 순간(70.4): 흔들림 + 붉은 균열
+    const hit=t-70.2; const shake=(hit>0&&hit<.9)?(1-hit/.9)*26:0;
+    hs.style.transform=`translate(${Math.sin(t*93)*shake}px,${Math.cos(t*71)*shake}px)`;
+    $('#crack').style.opacity=vis(t,70.2,71.5,.08,.5);
+    $('#crack').style.strokeDashoffset=0;
+    // 행진
+    const mv=vis(t,79,86,.8,.5); $('#march').style.opacity=mv;
+    for(const w of walkers){const x=((w.x+(t-79)*95)%2500)-200; const bob=Math.abs(Math.sin((t+w.ph)*6))*6;
+      w.el.style.left=x+'px'; w.el.style.transform=`translateY(${-bob}px) scale(${w.s})`;}
+  }
+
+  // 11. 결론
+  if(t>=86.2){
+    $$('#end .ecue').forEach(el=>{const a=+el.dataset.in,b=+el.dataset.out;el.style.opacity=vis(t,a,b,.8,.6);
+      el.style.transform=`translateY(${(1-easeOut((t-a)/1))*18}px)`;});
+    const lv=clamp((t-95)/1.4); $('#logo').style.opacity=lv; $('#logo').style.transform=`scale(${lerp(1.06,1,easeOut((t-95)/2.5))})`;
+    $('#logo').style.filter=`blur(${(1-lv)*8}px)`;
+    $('#logobar').style.width=easeOut((t-96)/1.5)*420+'px';
+    const tv=clamp((t-97)/1); $('#tag').style.opacity=tv; $('#tag').style.transform=`translateY(${(1-easeOut(tv))*16}px)`;
+  }
+  // 전체 페이드아웃
+  $('#fade').style.opacity=clamp((t-102.4)/1.4) + (t<0.6?1-t/0.6:0);
+};
+window.DURATION=104;
+window.render(0);
+</script>
+</body>
+</html>
