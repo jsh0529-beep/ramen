@@ -1,5 +1,6 @@
 // scene.html 을 프레임 단위로 캡처해 ffmpeg 로 인코딩
 // 사용법: node render.mjs [out.mp4] [fps]   |   node render.mjs --stills 3,20,60
+// SCENE=shorts/scene.html 로 다른 장면 파일 지정 (크기는 window.SIZE, 기본 1920x1080)
 import { chromium } from 'playwright';
 import { spawn } from 'node:child_process';
 import path from 'node:path';
@@ -10,9 +11,13 @@ const FFMPEG = process.env.FFMPEG || 'ffmpeg';
 const args = process.argv.slice(2);
 
 const browser = await chromium.launch();
+const scene = path.join(dir, process.env.SCENE || 'scene.html');
 const page = await browser.newPage({ viewport: { width: 1920, height: 1080 } });
-await page.goto('file://' + path.join(dir, 'scene.html'));
+await page.goto('file://' + scene);
+const size = await page.evaluate(() => window.SIZE || [1920, 1080]);
+await page.setViewportSize({ width: size[0], height: size[1] });
 await page.evaluate(() => document.fonts.ready);
+await page.evaluate(() => Promise.all([...document.images].map(i => i.decode().catch(() => {}))));
 
 if (args[0] === '--stills') {
   for (const t of args[1].split(',').map(Number)) {

@@ -4,7 +4,7 @@ set -euo pipefail
 cd "$(dirname "$0")"
 mkdir -p fonts && cd fonts
 : > fonts.css
-for fam in "Noto+Serif+KR:wght@400;700;900" "Noto+Sans+KR:wght@300;400;700"; do
+for fam in "Noto+Serif+KR:wght@400;700;900" "Noto+Sans+KR:wght@300;400;700;900"; do
   curl -s -A "Mozilla/4.0" "https://fonts.googleapis.com/css2?family=$fam" >> fonts.css
 done
 python3 - <<'PY'
