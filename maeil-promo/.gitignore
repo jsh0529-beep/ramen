@@ -3,3 +3,4 @@ frames/
 *.wav
 node_modules
 shorts/candidates/
+shorts/vendor/

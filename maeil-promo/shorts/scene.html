@@ -55,6 +55,7 @@ body{font-family:'Noto Sans KR',sans-serif;color:#fff}
 </head>
 <body>
 <div id="stage">
+<canvas id="gl" width="1080" height="1920" style="position:absolute;inset:0;width:1080px;height:1920px"></canvas>
 
 <!-- 샷: data-in/out(초), data-zoom(줌 방향), data-grade(색보정) -->
 <div class="shot" data-slot="01_phone_night"   data-in="0"     data-out="2.5"  data-z="1.00,1.10" data-f="saturate(.9) contrast(1.1) hue-rotate(-8deg)"></div>
@@ -69,6 +70,7 @@ body{font-family:'Noto Sans KR',sans-serif;color:#fff}
 <div class="shot" data-slot="10_daegu"         data-in="30.0"  data-out="35.0" data-z="1.12,1.00" data-f="saturate(1.05) contrast(1.05)"></div>
 <div class="shot" data-slot="11_morning_paper" data-in="35.0"  data-out="40.2" data-z="1.00,1.12" data-f="sepia(.12) saturate(1.1) brightness(1.03)"></div>
 
+<div id="grade" style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.28),rgba(0,0,0,0) 26%,rgba(0,0,0,0) 50%,rgba(0,0,0,.62))"></div>
 <!-- 자막 -->
 <div class="cap m"  style="top:1180px" data-in="0.25" data-out="1.2">솔직히,</div>
 <div class="cap xl" style="top:1150px" data-in="1.25" data-out="2.45" data-pop>신문 <span class="hl">누가 봐?</span></div>
@@ -117,6 +119,7 @@ body{font-family:'Noto Sans KR',sans-serif;color:#fff}
 <div id="fade"></div>
 </div>
 
+<script type="importmap">{"imports":{"three":"./vendor/three/three.module.js","three/addons/":"./vendor/three/addons/"}}</script>
 <script>
 const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
 const easeOut=x=>1-Math.pow(1-clamp(x),3);
@@ -127,8 +130,8 @@ function vis(t,a,b,fi=.12,fo=.08){if(t<a||t>b)return 0;return Math.min(clamp((t-
 
 // 사진 슬롯: photos/<slot>.jpg 가 있으면 사용, 없으면 자리표시
 const shots=$$('.shot').map(el=>{
-  const ph=document.createElement('div');ph.className='ph';ph.dataset.slot=el.dataset.slot;el.appendChild(ph);
-  const img=new Image();img.src=`photos/${el.dataset.slot}.jpg`;img.onerror=()=>img.remove();
+  const ph=document.createElement('div');
+  const img=new Image();img.src=`photos/${el.dataset.slot}.jpg`;img.onerror=()=>{img.remove();el.remove();};
   img.style.filter=el.dataset.f||'';el.appendChild(img);
   const g=document.createElement('div');g.className='grade';el.appendChild(g);
   const [z0,z1]=el.dataset.z.split(',').map(Number);
@@ -136,14 +139,19 @@ const shots=$$('.shot').map(el=>{
 });
 const CUTS=shots.map(s=>s.a).concat([8.75,40.2]);
 
+// 사진이 없으면 CG(three.js) 장면을 그린다
+let cg=null;
+window.READY=import('./cg.js').then(async m=>{await m.init(document.getElementById('gl'));cg=m;window.render(0);});
 window.render=function(t){
+  if(cg) cg.render(t);
   for(const s of shots){
+    if(!s.el.isConnected)continue;
     const on=t>=s.a&&t<s.b; s.el.style.opacity=on?1:0; if(!on)continue;
     const p=(t-s.a)/(s.b-s.a);
     const punch=1+.05*Math.max(0,1-(t-s.a)/.25);           // 컷 순간 살짝 튀어나오는 줌
     const z=lerp(s.z0,s.z1,p)*punch;
     const tr=`scale(${z}) translate(${lerp(-1,1,p)*8}px,${lerp(1,-1,p)*10}px)`;
-    if(s.img.isConnected) s.img.style.transform=tr; s.ph.style.transform=tr;
+    s.img.style.transform=tr;
   }
   $$('.cap,.chip,.src').forEach(el=>{
     const a=+el.dataset.in,b=+el.dataset.out,v=vis(t,a,b);
