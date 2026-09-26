@@ -129,6 +129,17 @@ def boom():
     return (body + rumble) * 0.9
 
 
+def blip(f=880, sec=0.09, v=0.3):
+    """메신저 알림처럼 짧게 올라가는 음."""
+    return _sweep(f, f * 1.5, sec) * _decay(int(sec * SR), sec / 3) * v
+
+
+def boing():
+    n = int(0.35 * SR)
+    f = 300 + 250 * np.sin(np.linspace(0, 3 * np.pi, n)) * np.exp(-np.linspace(0, 4, n))
+    return np.sin(2 * np.pi * np.cumsum(f) / SR) * _decay(n, 0.12) * 0.5
+
+
 def buzzer(sec=0.35):
     t = _t(sec)
     sq = np.sign(np.sin(2 * np.pi * 150 * t)) + 0.5 * np.sign(np.sin(2 * np.pi * 155 * t))
@@ -141,7 +152,12 @@ def buzzer(sec=0.35):
 TENSE = ([[57, 60, 64], [53, 57, 60], [50, 53, 57], [52, 56, 59]], [45, 41, 38, 40])
 
 
-def music(total, drums_in, drums_out, bpm=104, progression=TENSE):
+# C - G - Am - F (밝은 팝)
+POP = ([[60, 64, 67], [59, 62, 67], [57, 60, 64], [57, 60, 65]], [36, 43, 45, 41])
+
+
+def music(total, drums_in, drums_out, bpm=104, progression=TENSE, style="news"):
+    """style="pop"이면 4비트 킥·박수·아르페지오가 들어간 경쾌한 트랙."""
     n = int(total * SR)
     out = np.zeros(n)
     beat = 60 / bpm
@@ -187,11 +203,26 @@ def music(total, drums_in, drums_out, bpm=104, progression=TENSE):
             put(bs * _decay(len(bt), 0.12), at, 0.07 if at >= drums_in else 0.03)
         if not (drums_in <= at < drums_out):
             continue
+        hat = _highpass(_highpass(rng.standard_normal(h_n))) * _decay(h_n, 0.012)
+        clap = _lowpass(rng.standard_normal(int(0.18 * SR)), 0.4) * _decay(int(0.18 * SR), 0.04)
+        if style == "pop":
+            if i % 2 == 0:
+                put(kick, at, 0.5)
+            if i % 4 == 2:
+                put(clap, at, 0.3)
+            put(hat, at, 0.12 if i % 2 else 0.03)
+            # 반짝이는 아르페지오
+            c = chords[b % 4]
+            m = c[i % 3] + 12 + (12 if i % 8 >= 6 else 0)
+            pt = _t(step * 0.8)
+            f = _note(m)
+            pl = (np.sin(2 * np.pi * f * pt) + 0.3 * np.sin(2 * np.pi * 2 * f * pt)) * _decay(len(pt), 0.07)
+            put(pl, at, 0.05)
+            continue
         if i % 4 == 0:
             put(kick, at, 0.55)
         if i % 4 == 2 and i % 8 == 6:
-            put(_lowpass(rng.standard_normal(int(0.18 * SR)), 0.4) * _decay(int(0.18 * SR), 0.04), at, 0.25)
-        hat = _highpass(_highpass(rng.standard_normal(h_n))) * _decay(h_n, 0.012)
+            put(clap, at, 0.25)
         put(hat, at, 0.09 if i % 2 else 0.04)
     fade = np.ones(n)
     fi, fo = int(1.0 * SR), int(2.5 * SR)

@@ -335,14 +335,17 @@ def scene_starts(scenes):
     return starts, T + FADE
 
 
-def render(scenes, out, sound, thumb_at=3.2):
-    """scenes: [(fn, 길이)], sound(starts, total, wav경로)로 오디오를 만든다."""
+def render(scenes, out, sound, thumb_at=3.2, base=None, transition="fade"):
+    """scenes: [(fn, 길이)], sound(starts, total, wav경로)로 오디오를 만든다.
+    base(T, total) -> (img, draw)로 배경을 바꿀 수 있고, transition은 "fade" 또는 "slide"."""
+    base = base or frame_base
     starts, total = scene_starts(scenes)
     nframes = int(total * FPS)
 
     def draw(i, T):
         fn, dur = scenes[i]
-        img, d = frame_base(T, total)
+        img, d = base(T, total)
+        d.img = img
         fn(d, T - starts[i], dur)
         return img
 
@@ -361,7 +364,16 @@ def render(scenes, out, sound, thumb_at=3.2):
         active = [i for i, (_, dur) in enumerate(scenes) if starts[i] <= T < starts[i] + dur]
         img = draw(active[0], T)
         if len(active) > 1:
-            img = Image.blend(img, draw(active[1], T), clamp((T - starts[active[1]]) / FADE))
+            p = clamp((T - starts[active[1]]) / FADE)
+            nxt = draw(active[1], T)
+            if transition == "slide":
+                q = ease(p)
+                canvas = Image.new("RGB", (W, H))
+                canvas.paste(img, (int(-W * q), 0))
+                canvas.paste(nxt, (int(W * (1 - q)), 0))
+                img = canvas
+            else:
+                img = Image.blend(img, nxt, p)
         if f == int(thumb_at * FPS):
             img.save(os.path.splitext(out)[0] + "-thumbnail.png")
         proc.stdin.write(img.tobytes())
