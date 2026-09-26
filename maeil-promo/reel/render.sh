@@ -3,17 +3,18 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 FFMPEG=${FFMPEG:-ffmpeg}; FPS=120; TOTAL=$((30*FPS)); JOBS=${JOBS:-4}
-mkdir -p frames/reel; : > frames/reel/list.txt
+SRC=${SRC:-reel/scene.html}; OUT=${OUT:-reel/maeil_reel.mp4}; TAG=$(basename "$SRC" .html)
+mkdir -p frames/$TAG; : > frames/$TAG/list.txt
 step=$(( (TOTAL + JOBS - 1) / JOBS ))
 for ((j=0; j<JOBS; j++)); do
-  SCENE=reel/scene.html FRAMES=$((j*step)):$(((j+1)*step)) CRF=12 FFMPEG=$FFMPEG node render.mjs frames/reel/s$j.mp4 $FPS > frames/reel/log$j.txt 2>&1 &
-  echo "file 's$j.mp4'" >> frames/reel/list.txt
+  SCENE=$SRC FRAMES=$((j*step)):$(((j+1)*step)) CRF=12 FFMPEG=$FFMPEG node render.mjs frames/$TAG/s$j.mp4 $FPS > frames/$TAG/log$j.txt 2>&1 &
+  echo "file 's$j.mp4'" >> frames/$TAG/list.txt
 done
 wait
-$FFMPEG -y -loglevel error -f concat -safe 0 -i frames/reel/list.txt -c copy frames/reel_120.mp4
+$FFMPEG -y -loglevel error -f concat -safe 0 -i frames/$TAG/list.txt -c copy frames/${TAG}_120.mp4
 python3 reel/audio.py
 # 3 서브프레임 평균(셔터 270°) → 30fps
-$FFMPEG -y -loglevel error -i frames/reel_120.mp4 -i reel/soundtrack.wav \
+$FFMPEG -y -loglevel error -i frames/${TAG}_120.mp4 -i reel/soundtrack.wav \
   -vf "tmix=frames=3:weights='1 1 1',fps=30" -c:v libx264 -preset slow -crf 17 -pix_fmt yuv420p \
-  -c:a aac -b:a 256k -shortest -movflags +faststart reel/maeil_reel.mp4
+  -c:a aac -b:a 256k -shortest -movflags +faststart $OUT
 echo done

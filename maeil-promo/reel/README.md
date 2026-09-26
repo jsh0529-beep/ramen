@@ -1,6 +1,6 @@
 # 매일신문 브랜드 쇼릴 — 30s Motion Reel
 
-30초 · 1920×1080 · 30fps (120fps 렌더 → 서브프레임 블렌딩 모션 블러) · 120BPM · `maeil_reel.mp4`
+30초 · 가로 1920×1080 `maeil_reel.mp4` / 세로 1080×1920 `maeil_reel_vertical.mp4` (릴스·쇼츠용, `scene_v.html`) · 30fps (120fps 렌더 → 서브프레임 블렌딩 모션 블러) · 120BPM · `maeil_reel.mp4`
 
 팔레트는 **잉크 블랙 · 신문지 · 시그널 레드** 3색, 타이포는 Noto Serif KR 900(제호·명조)과 Noto Sans KR 900(헤드라인)만 씁니다. 모든 컷과 모션이 120BPM 박자(1박 = 0.5초)에 맞춰 떨어집니다.
 
@@ -37,4 +37,5 @@
 cd maeil-promo && ./fetch_fonts.sh && ln -sf "$(npm root -g)" node_modules
 SCENE=reel/scene.html node render.mjs --stills 3,9,15.6,24.8   # 스틸 확인
 JOBS=4 ./reel/render.sh                                          # → reel/maeil_reel.mp4 (약 3분)
+SRC=reel/scene_v.html OUT=reel/maeil_reel_vertical.mp4 ./reel/render.sh   # 세로 버전
 ```
