@@ -1,16 +1,19 @@
 """매일신문 기사 'AI 안경으로 성관계 몰카·시험 부정행위…규제는 뒷북'(2026-09-26)을
-1080x1920 세로형 모션그래픽 영상(음성 없음)으로 만든다.
+1080x1920 세로형 모션그래픽 영상(내레이션 없음, 효과음·배경음 포함)으로 만든다.
 
-사용법: pip install pillow imageio-ffmpeg && python3 video/make_video.py
+사용법: pip install pillow numpy imageio-ffmpeg && python3 video/make_video.py
 결과물: video/ai-glasses-news.mp4, video/thumbnail.png
 """
 import math
 import os
 import subprocess
+import tempfile
 from functools import lru_cache
 
 import imageio_ffmpeg
 from PIL import Image, ImageDraw, ImageFont
+
+import audio
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "ai-glasses-news.mp4")
@@ -337,11 +340,15 @@ def main():
         fn(d, T - starts[i], dur)
         return img
 
+    tmp = tempfile.TemporaryDirectory()
+    wav = os.path.join(tmp.name, "audio.wav")
+    audio.build(starts, total, wav)
+
     ff = imageio_ffmpeg.get_ffmpeg_exe()
     proc = subprocess.Popen(
         [ff, "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}",
-         "-r", str(FPS), "-i", "-", "-c:v", "libx264", "-preset", "medium", "-crf", "20",
-         "-pix_fmt", "yuv420p", "-movflags", "+faststart", OUT],
+         "-r", str(FPS), "-i", "-", "-i", wav, "-c:v", "libx264", "-preset", "medium", "-crf", "20",
+         "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", OUT],
         stdin=subprocess.PIPE)
     for f in range(nframes):
         T = f / FPS
@@ -354,6 +361,7 @@ def main():
         proc.stdin.write(img.tobytes())
     proc.stdin.close()
     proc.wait()
+    tmp.cleanup()
     print(f"저장: {OUT} ({total:.1f}초, {nframes}프레임)")
 
 
