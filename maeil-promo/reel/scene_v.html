@@ -42,7 +42,7 @@ canvas{position:absolute;inset:0}
 <!-- S0 콜드 오픈: 붉은 점 -->
 <div class="L" id="s0" style="background:var(--ink)">
   <div id="s0rules"></div>
-  <div class="abs" id="dot" style="left:540px;top:960px;width:36px;height:36px;margin:-18px;border-radius:50%;background:var(--red)"></div>
+  <div class="abs" id="dot" style="left:540px;top:960px;width:36px;height:36px;margin:-18px;border-radius:3px;background:var(--red)"></div>
   <div class="abs lbl" id="s0lbl" style="left:0;right:0;top:1030px;text-align:center;color:var(--mute)">DAEGU · 06:00 AM</div>
 </div>
 
@@ -105,18 +105,18 @@ canvas{position:absolute;inset:0}
 </div>
 
 <!-- S9 빌드업: 햇살 -->
-<div class="L" id="s9" style="background:var(--red)">
+<div class="L" id="s9" style="background:var(--paper)">
   <canvas id="rays" width="1080" height="1920"></canvas>
-  <div class="abs ctr sans" id="s9w" style="top:830px;font-size:230px;letter-spacing:-.05em;color:var(--paper);line-height:1"></div>
+  <div class="abs ctr sans" id="s9w" style="top:830px;font-size:230px;letter-spacing:-.05em;color:var(--red);line-height:1;text-shadow:0 0 30px #f3eee4,0 0 60px #f3eee4"></div>
   <div id="chips"></div>
 </div>
 
 <!-- S10 드롭: 해 뜨는 사시 -->
 <div class="L" id="s10" style="background:var(--ink)">
   <canvas id="sun" width="1080" height="1920"></canvas>
-  <div class="abs lbl ctr" id="s10l" style="top:560px;color:var(--paper);opacity:0">매일신문 사시 社是</div>
-  <div class="abs ctr serif" id="s10a" style="top:650px;font-size:120px;letter-spacing:-.04em;color:var(--paper);opacity:0">땀과 사랑으로</div>
-  <div class="abs ctr serif" id="s10b" style="top:810px;font-size:120px;letter-spacing:-.04em;color:var(--paper);opacity:0">겨레의 빛이 되리</div>
+  <div class="abs lbl ctr" id="s10l" style="color:var(--red)!important;top:560px;color:var(--paper);opacity:0">매일신문 사시 社是</div>
+  <div class="abs ctr serif" id="s10a" style="top:650px;font-size:120px;letter-spacing:-.04em;color:var(--ink);opacity:0">땀과 사랑으로</div>
+  <div class="abs ctr serif" id="s10b" style="top:810px;font-size:120px;letter-spacing:-.04em;color:var(--ink);opacity:0">겨레의 빛이 되리</div>
 </div>
 
 <!-- S11 로고 -->
@@ -252,32 +252,40 @@ function s9word(t){ // 가속: 20~22 박자, 22~23 8분, 23~23.5 16분
   return S9W[Math.min(S9W.length-1,k)];}
 const CHIPS=['1946 창간','창간 80주년','대구 서성로 20','조간 발행','지면 · 웹 · 영상','PDF 지면보기','포토갤러리','유튜브'];
 const chipEls=CHIPS.map((c,i)=>{const d=el('div','abs',$('#chips'),c);d.style.cssText=`font:900 34px 'Noto Sans KR';padding:14px 26px;border-radius:999px;background:var(--ink);color:var(--paper);white-space:nowrap;opacity:0`;return {d,i}});
-function drawRays(t){
-  const g=rays; g.clearRect(0,0,1080,1920);
-  const p=clamp((t-20)/4), spin=t*0.6+ei(p)*9, n=24;
-  g.save(); g.translate(540,960);
-  for(let i=0;i<n;i++){const a0=spin+i*2*Math.PI/n,a1=a0+Math.PI/n;
-    g.fillStyle=i%2?'rgba(255,255,255,0)':'rgba(184,31,26,.95)'; g.beginPath(); g.moveTo(0,0); g.arc(0,0,2400,a0,a1); g.closePath(); g.fill();}
-  g.fillStyle='#e4312b'; g.beginPath(); g.arc(0,0,180+60*Math.sin(t*Math.PI*4)*p,0,7); g.fill();
-  g.restore();
+function drawRays(t){ // 윤전기처럼 위로 흘러가는 신문 단(column)들 — 평행 구조, 방사형 없음
+  const g=rays, W=g.canvas.width, H=g.canvas.height; g.clearRect(0,0,W,H);
+  const p=clamp((t-20)/3.5), cols=W>H?12:6, cw=W/cols, gut=W>H?26:22;
+  const travel=300*(t-20)+3900*Math.pow(p,4)*3.5/4;   // 점점 빨라지는 윤전기
+  for(let c=0;c<cols;c++){
+    const x=c*cw+gut/2, w=cw-gut, off=(travel*(1+.12*((c*7)%5)/5))%44;
+    for(let y=-44;y<H+44;y+=22){const yy=y-off; const len=((c*17+Math.floor((y+travel)/22)*29)%100)/100;
+      g.fillStyle='rgba(13,12,11,.22)'; g.fillRect(x,yy,w*(len<.12?.55:1),8);}
+  }
+  // 박자마다 가로 괘선이 번쩍
+  const bp=pulse(t,Math.floor(t/B)*B,.2);
+  g.fillStyle=`rgba(228,49,43,${.9*bp})`; g.fillRect(0,H*.5-6,W,12);
+  // 가장자리 비네트
+  const vg=g.createLinearGradient(0,0,0,H); vg.addColorStop(0,'rgba(243,238,228,1)'); vg.addColorStop(.18,'rgba(243,238,228,0)');
+  vg.addColorStop(.82,'rgba(243,238,228,0)'); vg.addColorStop(1,'rgba(243,238,228,1)'); g.fillStyle=vg; g.fillRect(0,0,W,H);
 }
 
 // ─────────── S10: 해 ───────────
 const sun=$('#sun').getContext('2d');
-function drawSun(t){
-  const g=sun, p=clamp((t-24)/3); g.clearRect(0,0,1080,1920);
-  const cy=lerp(2300,1180,expo(p*1.4)), R=lerp(360,480,eo(p));
-  // 햇살 글로우
-  const gr=g.createRadialGradient(540,cy,R*.8,540,cy,R*2.6);gr.addColorStop(0,'rgba(228,49,43,.55)');gr.addColorStop(1,'rgba(228,49,43,0)');
-  g.fillStyle=gr; g.fillRect(0,0,1080,1920);
-  // 인쇄 망점식 해: 가로 줄무늬로 채운 원
-  g.save(); g.beginPath(); g.arc(540,cy,R,0,7); g.clip();
-  g.fillStyle='#e4312b'; g.fillRect(0,0,1080,1920);
-  for(let y=cy-R;y<cy+R;y+=16){const k=(y-(cy-R))/(2*R); const h=lerp(1,12,Math.pow(k,1.6)); g.fillStyle='#0d0c0b'; g.fillRect(0,y+16-h,1080,h*(k>.35?1:0));}
-  g.restore();
-  // 수평선
-  g.fillStyle='#0d0c0b'; g.fillRect(0,1480,1080,440);
-  for(let i=0;i<8;i++){g.fillStyle=`rgba(243,238,228,${.5-i*.055})`; const y=1490+i*i*3.8; const w=lerp(0,1080,expo((t-24.1-i*.05)/1.2)); g.fillRect(540-w/2,y,w,2);}
+function drawSun(t){ // 새벽: 어둠을 가르는 가로 빛줄기가 열리며 신문지 지면이 드러남 (원형·방사형 없음)
+  const g=sun, W=g.canvas.width, H=g.canvas.height; g.clearRect(0,0,W,H);
+  const p=clamp((t-24)/3); const open=expo((t-24)/.9);
+  const h=lerp(6,H*1.05,open), cy=H*.5;
+  // 빛줄기 번짐
+  const glow=g.createLinearGradient(0,cy-h/2-260,0,cy+h/2+260);
+  glow.addColorStop(0,'rgba(243,238,228,0)'); glow.addColorStop(.5,'rgba(243,238,228,.35)'); glow.addColorStop(1,'rgba(243,238,228,0)');
+  g.fillStyle=glow; g.fillRect(0,cy-h/2-260,W,h+520);
+  // 지면
+  const pg=g.createLinearGradient(0,cy-h/2,0,cy+h/2); pg.addColorStop(0,'#e9e1d2'); pg.addColorStop(.5,'#f5f0e6'); pg.addColorStop(1,'#e9e1d2');
+  g.fillStyle=pg; g.fillRect(0,cy-h/2,W,h);
+  // 지면 괘선 (신문 칼럼 가이드)이 그어짐
+  const m=W>H?140:70;
+  [[.26,0],[.74,.08]].forEach(([k,d])=>{const w=lerp(0,W-2*m,expo((t-24.35-d)/.7)); g.fillStyle='#0d0c0b'; g.fillRect(W/2-w/2,H*k,w,3); g.fillRect(W/2-w/2,H*k+9,w,1.5);});
+  const rw=lerp(0,W>H?220:180,expo((t-25.9)/.5)); g.fillStyle='#e4312b'; g.fillRect(W/2-rw/2,H*(W>H?.66:.6),rw,8);
 }
 
 // ─────────── S11: 로고 스트립 ───────────
@@ -299,7 +307,7 @@ window.render=function(t){
   $('#grain').style.transform=`translate(${(k*37)%200-100}px,${(k*61)%200-100}px)`;
   const f=Math.floor(t*30); $('#tc').textContent=`00:00:${String(Math.floor(t)).padStart(2,'0')}:${String(f%30).padStart(2,'0')}`;
   $('#bt').textContent=`♩=${BPM}  BAR ${Math.floor(t/(4*B))+1}.${Math.floor(t/B)%4+1}`;
-  $('#hud').style.color=(t>=2&&t<4)||(t>=18&&t<20)||(t>=27)||(t>=4&&t<6)?'#0d0c0b':'#f3eee4';
+  $('#hud').style.color=(t>=2&&t<4)||(t>=18&&t<23.5)||(t>=24.3)||(t>=4&&t<6)?'#0d0c0b':'#f3eee4';
   $('#hud').style.opacity=t<.3||t>29.6?0:1;
 
   // S0
@@ -416,7 +424,7 @@ window.render=function(t){
       const ang=i*2.4+t*.3; const rad=lerp(900,380+ (i%3)*70,q);
       d.style.left=(540+Math.cos(ang)*rad*.62-120)+'px'; d.style.top=(960+Math.sin(ang)*rad*1.45-30)+'px';
       d.style.opacity=t>=at&&t<23.5?1:0; d.style.transform=`scale(${lerp(.4,1,q)})`;});
-    $('#s9').style.background=t>=23.5?'var(--ink)':'var(--red)'; $('#rays').style.opacity=t>=23.5?0:1;
+    $('#s9').style.background=t>=23.5?'var(--ink)':'var(--paper)'; $('#rays').style.opacity=t>=23.5?0:1;
   }
   // S10
   if(t>=24&&t<27){
