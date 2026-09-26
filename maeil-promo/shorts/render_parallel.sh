@@ -7,7 +7,7 @@ mkdir -p frames/seg; : > frames/seg/list.txt
 step=$(( (TOTAL + JOBS - 1) / JOBS ))
 for ((j=0; j<JOBS; j++)); do
   a=$((j*step)); b=$(((j+1)*step))
-  SCENE=shorts/scene.html FRAMES=$a:$b FFMPEG=$FFMPEG node render.mjs frames/seg/s$j.mp4 $FPS > frames/seg/log$j.txt 2>&1 &
+  GL=1 SCENE=shorts/scene.html FRAMES=$a:$b FFMPEG=$FFMPEG node render.mjs frames/seg/s$j.mp4 $FPS > frames/seg/log$j.txt 2>&1 &
   echo "file 's$j.mp4'" >> frames/seg/list.txt
 done
 wait

@@ -21,7 +21,8 @@ const server = http.createServer((req, res) => {
   fs.createReadStream(f).pipe(res);
 }).listen(0, '127.0.0.1');
 await new Promise(r => server.once('listening', r));
-const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+// WebGL(three.js) 장면만 SwiftShader 로 GPU 에뮬레이션 (GL=1). DOM 장면은 기본 설정이 훨씬 빠르다.
+const browser = await chromium.launch(process.env.GL ? { args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] } : {});
 const scene = process.env.SCENE || 'scene.html';
 const page = await browser.newPage({ viewport: { width: 1920, height: 1080 } });
 page.on('console', m => { if (m.type() === 'error') console.error('[page]', m.text()); });
@@ -50,7 +51,7 @@ const n = Math.round(dur * fps);
 // FRAMES=시작:끝 으로 일부 구간만 렌더 (병렬 렌더 후 이어붙이기용)
 const [f0, f1] = (process.env.FRAMES || `0:${n}`).split(':').map(Number);
 const ff = spawn(FFMPEG, ['-y', '-f', 'image2pipe', '-framerate', String(fps), '-i', '-',
-  '-c:v', 'libx264', '-preset', 'medium', '-crf', '20', '-pix_fmt', 'yuv420p', path.join(dir, out)],
+  '-c:v', 'libx264', '-preset', 'medium', '-crf', process.env.CRF || '20', '-pix_fmt', 'yuv420p', path.join(dir, out)],
   { stdio: ['pipe', 'inherit', 'inherit'] });
 for (let i = f0; i < Math.min(f1, n); i++) {
   await page.evaluate(t => window.render(t), i / fps);

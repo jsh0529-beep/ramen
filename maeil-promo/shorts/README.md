@@ -33,7 +33,7 @@
 cd maeil-promo
 ./fetch_fonts.sh && ./shorts/fetch_vendor.sh          # 폰트, three.js (git 제외)
 ln -sf "$(npm root -g)" node_modules                  # 전역 playwright 연결
-SCENE=shorts/scene.html node render.mjs --stills 2,10,23   # 스틸 확인 → frames/
+GL=1 SCENE=shorts/scene.html node render.mjs --stills 2,10,23   # 스틸 확인 → frames/
 JOBS=4 ./shorts/render_parallel.sh                    # 병렬 렌더 + 사운드 → shorts/maeil_shorts.mp4
 ```
 
