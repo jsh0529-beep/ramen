@@ -137,14 +137,16 @@ def buzzer(sec=0.35):
 
 
 # ---- 배경음악 ----
-def music(total, drums_in, drums_out, bpm=104):
+# Am - F - Dm - E (긴장감 있는 뉴스 톤)
+TENSE = ([[57, 60, 64], [53, 57, 60], [50, 53, 57], [52, 56, 59]], [45, 41, 38, 40])
+
+
+def music(total, drums_in, drums_out, bpm=104, progression=TENSE):
     n = int(total * SR)
     out = np.zeros(n)
     beat = 60 / bpm
     bar = beat * 4
-    # Am - F - Dm - E (긴장감 있는 뉴스 톤)
-    chords = [[57, 60, 64], [53, 57, 60], [50, 53, 57], [52, 56, 59]]
-    roots = [45, 41, 38, 40]
+    chords, roots = progression
 
     # 패드
     t = _t(total)
@@ -198,12 +200,14 @@ def music(total, drums_in, drums_out, bpm=104):
     return out * fade
 
 
-def build(starts, total, path):
-    """starts: 각 장면 시작 시각. 장면 애니메이션 타이밍에 맞춰 효과음 배치."""
-    n = int(total * SR)
-    sfx = np.zeros((n, 2))
+class Mixer:
+    def __init__(self, total):
+        self.total = total
+        self.n = int(total * SR)
+        self.sfx = np.zeros((self.n, 2))
 
-    def put(x, at, v=1.0, pan=0.0):
+    def put(self, x, at, v=1.0, pan=0.0):
+        n, sfx = self.n, self.sfx
         i = int(at * SR)
         if i < 0 or i >= n:
             return
@@ -211,6 +215,24 @@ def build(starts, total, path):
         l, r = np.sqrt((1 - pan) / 2), np.sqrt((1 + pan) / 2)
         sfx[i:j, 0] += x[:j - i] * v * l * 1.41
         sfx[i:j, 1] += x[:j - i] * v * r * 1.41
+
+    def write(self, path, bgm):
+        mix = self.sfx + bgm[:, None]
+        mix = np.tanh(mix * 1.2) / np.tanh(1.2)
+        mix /= max(1e-9, np.abs(mix).max()) / 0.9
+        data = (mix * 32767).astype("<i2")
+        with wave.open(path, "wb") as w:
+            w.setnchannels(2)
+            w.setsampwidth(2)
+            w.setframerate(SR)
+            w.writeframes(data.tobytes())
+
+
+def build(starts, total, path):
+    """AI 안경 영상용: 장면 애니메이션 타이밍에 맞춰 효과음 배치."""
+    mx = Mixer(total)
+
+    put = mx.put
 
     s0, s1, s2, s3, s4, s5 = starts
     # 장면 전환 휙
@@ -272,13 +294,4 @@ def build(starts, total, path):
     for at in [1.0, 1.2, 1.6, 2.2, 2.4]:
         put(swish(), s5 + at, 0.5)
 
-    bgm = music(total, drums_in=s0 + 2.35, drums_out=s5 + 0.8)
-    mix = sfx + bgm[:, None]
-    mix = np.tanh(mix * 1.2) / np.tanh(1.2)
-    mix /= max(1e-9, np.abs(mix).max()) / 0.9
-    data = (mix * 32767).astype("<i2")
-    with wave.open(path, "wb") as w:
-        w.setnchannels(2)
-        w.setsampwidth(2)
-        w.setframerate(SR)
-        w.writeframes(data.tobytes())
+    mx.write(path, music(total, drums_in=s0 + 2.35, drums_out=s5 + 0.8))

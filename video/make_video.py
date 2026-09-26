@@ -2,7 +2,7 @@
 1080x1920 세로형 모션그래픽 영상(내레이션 없음, 효과음·배경음 포함)으로 만든다.
 
 사용법: pip install pillow numpy imageio-ffmpeg && python3 video/make_video.py
-결과물: video/ai-glasses-news.mp4, video/thumbnail.png
+결과물: video/ai-glasses-news.mp4, video/ai-glasses-news-thumbnail.png
 """
 import math
 import os
@@ -17,6 +17,7 @@ import audio
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "ai-glasses-news.mp4")
+HEADER = "매일신문 · 2026.09.26"
 W, H = 1080, 1920
 FPS = 30
 FADE = 0.5
@@ -93,7 +94,7 @@ def frame_base(T, total):
     # 헤더
     d.rectangle((80, 150, 92, 200), fill=ACCENT)
     d.text((112, 150), "이슈 브리핑", font=font("x", 40), fill=TEXT)
-    d.text((112, 206), "매일신문 · 2026.09.26", font=font("r", 30), fill=MUTED)
+    d.text((112, 206), HEADER, font=font("r", 30), fill=MUTED)
     # 전체 진행 바
     d.rounded_rectangle((80, 1792, W - 80, 1800), 4, fill=(255, 255, 255, 40))
     d.rounded_rectangle((80, 1792, 80 + (W - 160) * clamp(T / total), 1800), 4, fill=ACCENT)
@@ -326,43 +327,52 @@ def s_end(d, t, dur):
 SCENES = [(s_title, 5.0), (s_market, 6.5), (s_exam, 7.0), (s_privacy, 7.0), (s_policy, 7.0), (s_end, 5.5)]
 
 
-def main():
+def scene_starts(scenes):
     starts, T = [], 0.0
-    for _, dur in SCENES:
+    for _, dur in scenes:
         starts.append(T)
         T += dur - FADE
-    total = T + FADE
+    return starts, T + FADE
+
+
+def render(scenes, out, sound, thumb_at=3.2):
+    """scenes: [(fn, 길이)], sound(starts, total, wav경로)로 오디오를 만든다."""
+    starts, total = scene_starts(scenes)
     nframes = int(total * FPS)
 
-    def render(i, T):
-        fn, dur = SCENES[i]
+    def draw(i, T):
+        fn, dur = scenes[i]
         img, d = frame_base(T, total)
         fn(d, T - starts[i], dur)
         return img
 
     tmp = tempfile.TemporaryDirectory()
     wav = os.path.join(tmp.name, "audio.wav")
-    audio.build(starts, total, wav)
+    sound(starts, total, wav)
 
     ff = imageio_ffmpeg.get_ffmpeg_exe()
     proc = subprocess.Popen(
         [ff, "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}",
          "-r", str(FPS), "-i", "-", "-i", wav, "-c:v", "libx264", "-preset", "medium", "-crf", "20",
-         "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", OUT],
+         "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", out],
         stdin=subprocess.PIPE)
     for f in range(nframes):
         T = f / FPS
-        active = [i for i, (_, dur) in enumerate(SCENES) if starts[i] <= T < starts[i] + dur]
-        img = render(active[0], T)
+        active = [i for i, (_, dur) in enumerate(scenes) if starts[i] <= T < starts[i] + dur]
+        img = draw(active[0], T)
         if len(active) > 1:
-            img = Image.blend(img, render(active[1], T), clamp((T - starts[active[1]]) / FADE))
-        if f == int((starts[0] + 3.2) * FPS):
-            img.save(os.path.join(HERE, "thumbnail.png"))
+            img = Image.blend(img, draw(active[1], T), clamp((T - starts[active[1]]) / FADE))
+        if f == int(thumb_at * FPS):
+            img.save(os.path.splitext(out)[0] + "-thumbnail.png")
         proc.stdin.write(img.tobytes())
     proc.stdin.close()
     proc.wait()
     tmp.cleanup()
-    print(f"저장: {OUT} ({total:.1f}초, {nframes}프레임)")
+    print(f"저장: {out} ({total:.1f}초, {nframes}프레임)")
+
+
+def main():
+    render(SCENES, OUT, audio.build)
 
 
 if __name__ == "__main__":
