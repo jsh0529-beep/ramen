@@ -326,3 +326,83 @@ def build(starts, total, path):
         put(swish(), s5 + at, 0.5)
 
     mx.write(path, music(total, drums_in=s0 + 2.35, drums_out=s5 + 0.8))
+
+
+# ---- 클래식풍 배경음 (피아노 아르페지오 + 현악 패드) ----
+def piano(midi, sec=2.2, v=1.0):
+    f = _note(midi)
+    t = _t(sec)
+    x = np.zeros(len(t))
+    for k in range(1, 7):
+        x += np.sin(2 * np.pi * f * k * t * (1 + 0.0004 * k * k)) / k ** 1.6 * np.exp(-t * (1.2 + 0.9 * k))
+    att = np.minimum(1, t / 0.004)
+    return x * att * v * 0.5
+
+
+def strings(midis, sec):
+    t = _t(sec)
+    x = np.zeros(len(t))
+    for m in midis:
+        f = _note(m)
+        for det in (-0.35, 0.0, 0.35):
+            vib = 0.004 * np.sin(2 * np.pi * 5.2 * t)
+            ph = 2 * np.pi * np.cumsum(f * (1 + det / 100 + vib)) / SR
+            x += sum(np.sin(k * ph) / k for k in range(1, 6))
+    env = np.minimum(1, np.minimum(t / 0.9, (sec - t) / 0.9))
+    return _lowpass(x * env, 0.05) * 0.018
+
+
+# D - Bm - G - A (품격 있는 장조 진행)
+NOBLE = ([[62, 66, 69], [59, 62, 66], [55, 59, 62], [57, 61, 64]], [38, 35, 31, 33])
+
+
+def elegant_music(total, bar=3.4, progression=NOBLE):
+    n = int(total * SR)
+    out = np.zeros(n)
+    chords, roots = progression
+
+    def put(x, at, v=1.0):
+        i = int(at * SR)
+        if i < 0:
+            x, i = x[-i:], 0
+        if i >= n:
+            return
+        j = min(n, i + len(x))
+        out[i:j] += x[:j - i] * v
+
+    nbars = int(total / bar) + 1
+    for b in range(nbars):
+        c, r = chords[b % 4], roots[b % 4]
+        at = b * bar
+        put(strings([m - 12 for m in c], bar + 0.9), at - 0.45, 1.0)
+        put(piano(r, 3.5), at, 0.9)
+        put(piano(r + 12, 3.0), at, 0.4)
+        # 오르내리는 아르페지오 (8분음표)
+        seq = [c[0], c[1], c[2], c[0] + 12, c[1] + 12, c[0] + 12, c[2], c[1]]
+        step = bar / 8
+        for i, m in enumerate(seq):
+            put(piano(m, 2.2), at + i * step, 0.55 if i % 4 == 0 else 0.4)
+        # 두 마디마다 고음 멜로디 한 음
+        if b % 2 == 1:
+            put(piano(c[2] + 24, 2.5), at + bar * 0.5, 0.25)
+    fade = np.ones(n)
+    fi, fo = int(2.0 * SR), int(3.0 * SR)
+    fade[:fi] = np.linspace(0, 1, fi)
+    fade[-fo:] = np.linspace(1, 0, fo)
+    return out * fade
+
+
+def jet_pass(sec=3.0):
+    """멀리서 다가왔다 지나가는 제트기 소리."""
+    n = int(sec * SR)
+    x = _lowpass(rng.standard_normal(n), 0.04 + 0.08 * np.sin(np.pi * np.linspace(0, 1, n)) ** 2)
+    return x * np.sin(np.pi * np.linspace(0, 1, n)) ** 2 * 1.5
+
+
+def timpani(midi=38):
+    n = int(2.0 * SR)
+    f = _note(midi)
+    t = _t(2.0)
+    body = np.sin(2 * np.pi * f * t) * _decay(n, 0.6) + 0.4 * np.sin(2 * np.pi * f * 1.5 * t) * _decay(n, 0.3)
+    hit = _lowpass(rng.standard_normal(n), 0.1) * _decay(n, 0.02)
+    return (body + hit) * 0.5
