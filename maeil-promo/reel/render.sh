@@ -3,7 +3,8 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 FFMPEG=${FFMPEG:-ffmpeg}; FPS=120; TOTAL=$((30*FPS)); JOBS=${JOBS:-4}
-SRC=${SRC:-reel/scene.html}; OUT=${OUT:-reel/maeil_reel.mp4}; TAG=$(basename "$SRC" .html)
+SRC=${SRC:-reel/scene.html}; OUT=${OUT:-reel/maeil_reel.mp4}; TAG=$(basename "$(dirname "$SRC")")_$(basename "$SRC" .html)
+AUDIO=${AUDIO:-reel/audio.py}; WAV=$(dirname "$AUDIO")/soundtrack.wav
 mkdir -p frames/$TAG; : > frames/$TAG/list.txt
 step=$(( (TOTAL + JOBS - 1) / JOBS ))
 for ((j=0; j<JOBS; j++)); do
@@ -12,9 +13,10 @@ for ((j=0; j<JOBS; j++)); do
 done
 wait
 $FFMPEG -y -loglevel error -f concat -safe 0 -i frames/$TAG/list.txt -c copy frames/${TAG}_120.mp4
-python3 reel/audio.py
-# 3 서브프레임 평균(셔터 270°) → 30fps
-$FFMPEG -y -loglevel error -i frames/${TAG}_120.mp4 -i reel/soundtrack.wav \
-  -vf "tmix=frames=3:weights='1 1 1',fps=30" -c:v libx264 -preset slow -crf 17 -pix_fmt yuv420p \
+python3 "$AUDIO"
+# 3 서브프레임 평균(셔터 270°) → 30fps.  BLEND=0 이면 블러 없이 선명하게 (숏폼 버전)
+if [ "${BLEND:-1}" = 0 ]; then VF="fps=30"; else VF="tmix=frames=3:weights='1 1 1',fps=30"; fi
+$FFMPEG -y -loglevel error -i frames/${TAG}_120.mp4 -i "$WAV" \
+  -vf "$VF" -c:v libx264 -preset slow -crf 17 -pix_fmt yuv420p \
   -c:a aac -b:a 256k -shortest -movflags +faststart $OUT
 echo done
