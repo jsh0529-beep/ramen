@@ -5,7 +5,7 @@
 <title>매일신문 — 요즘 버전</title>
 <link rel="stylesheet" href="../fonts/fonts.css">
 <style>
-:root{--ink:#0b0b10;--paper:#f6f3ec;--red:#ff3b30;--lime:#d9ff3f;--blue:#2f4bff;--pink:#ff7ac8;--violet:#7b5cff;
+:root{--ink:#0e0e0d;--paper:#edeae4;--red:#ff4f1a;--lime:#ff4f1a;--blue:#1c1c1b;--pink:#d6d1c8;--violet:#262523;
   --f:'Noto Sans KR','Noto Color Emoji',sans-serif}
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:1080px;height:1920px;overflow:hidden;background:#000}
@@ -16,9 +16,9 @@ body{font-family:var(--f);color:#fff}
 .ctr{left:0;right:0;text-align:center}
 .b9{font-weight:900;letter-spacing:-.05em}
 canvas{position:absolute;inset:0}
-.glass{background:rgba(255,255,255,.62);backdrop-filter:blur(18px);border-radius:44px;color:var(--ink);box-shadow:0 20px 50px rgba(0,0,0,.18)}
+.glass{background:rgba(237,234,228,.14);color:#edeae4!important;border:1.5px solid rgba(255,255,255,.12);backdrop-filter:blur(18px);border-radius:44px;color:var(--ink);box-shadow:0 20px 50px rgba(0,0,0,.18)}
 .sticker{position:absolute;display:inline-flex;align-items:center;gap:12px;padding:18px 34px;border-radius:999px;font:900 54px var(--f);letter-spacing:-.03em;
-  border:6px solid #fff;box-shadow:0 14px 0 rgba(0,0,0,.25);white-space:nowrap}
+  border:2px solid rgba(255,255,255,.18);white-space:nowrap}
 .pill{display:inline-block;padding:10px 26px;border-radius:999px;font:900 34px var(--f)}
 .w{position:absolute;border-radius:48px;overflow:hidden;padding:38px}
 .bub{position:absolute;max-width:760px;padding:28px 38px;border-radius:44px;font:700 52px var(--f);letter-spacing:-.03em;line-height:1.3}
@@ -30,7 +30,7 @@ canvas{position:absolute;inset:0}
 </head>
 <body>
 <div id="cam">
-<canvas id="mesh" width="270" height="480" style="width:1080px;height:1920px;filter:blur(40px) saturate(1.2);transform:scale(1.2)"></canvas>
+<canvas id="mesh" width="270" height="480" style="width:1080px;height:1920px;filter:blur(40px);transform:scale(1.2)"></canvas>
 
 <!-- S1 잠금화면 -->
 <div class="L" id="s1">
@@ -53,18 +53,18 @@ canvas{position:absolute;inset:0}
   <div class="abs b9" id="ajae" style="left:90px;top:700px;font-size:190px;color:#8a8680">아재 👴</div>
   <svg class="abs" id="scribble" viewBox="0 0 1080 1920" style="left:0;top:0;width:1080px;height:1920px">
     <path d="M60 820 C 250 740, 420 900, 620 780 S 900 840, 960 760 M80 900 C 300 820, 520 960, 700 840 S 920 900, 980 830" fill="none" stroke="#ff3b30" stroke-width="34" stroke-linecap="round"/></svg>
-  <div class="sticker" id="hip" style="left:170px;top:1010px;background:var(--lime);color:var(--ink);font-size:150px;padding:18px 60px">힙 😎</div>
+  <div class="sticker" id="hip" style="left:170px;top:1010px;background:var(--red);color:#fff;font-size:150px;padding:18px 60px;border:0">힙 😎</div>
   <div id="tags"></div>
 </div>
 
 <!-- S4 벤토 위젯 -->
 <div class="L" id="s4">
   <div class="abs b9" id="s4t" style="left:70px;top:190px;font-size:84px">오늘의 매일신문 ✦</div>
-  <div class="w" id="w1" style="left:60px;top:340px;width:465px;height:465px;background:var(--blue)">
+  <div class="w" id="w1" style="left:60px;top:340px;width:465px;height:465px;background:var(--paper);color:var(--ink)">
     <div style="font:700 36px var(--f);opacity:.8">SINCE</div><div class="b9" style="font-size:170px;line-height:1">1946</div><div style="font:700 34px var(--f);margin-top:14px;opacity:.85">대구 대안동에서 첫 호</div></div>
-  <div class="w" id="w2" style="left:555px;top:340px;width:465px;height:465px;background:var(--lime);color:var(--ink)">
+  <div class="w" id="w2" style="left:555px;top:340px;width:465px;height:465px;background:var(--red);color:#fff">
     <div class="b9" style="font-size:230px;line-height:.95">80<span style="font-size:90px">th</span></div><div class="b9" style="font-size:50px;margin-top:20px">창간 80주년 🎉</div></div>
-  <div class="w" id="w3" style="left:60px;top:835px;width:960px;height:360px;background:#16161f">
+  <div class="w" id="w3" style="left:60px;top:835px;width:960px;height:360px;background:#0e0e0d;border:1.5px solid rgba(255,255,255,.1)">
     <div style="display:flex;gap:40px;align-items:center">
       <div style="width:240px;height:240px;border-radius:32px;background:var(--red);display:flex;align-items:center;justify-content:center;font:900 110px 'Noto Serif KR'">每日</div>
       <div style="flex:1"><div style="font:700 32px var(--f);color:var(--lime)">NOW READING</div><div class="b9" style="font-size:72px;margin:6px 0">매일신문</div><div style="font:500 36px var(--f);opacity:.7">오늘 아침 1면 · 대구·경북</div>
@@ -76,7 +76,7 @@ canvas{position:absolute;inset:0}
 </div>
 
 <!-- S5 채팅 -->
-<div class="L" id="s5" style="background:#e9ecf5;color:var(--ink)">
+<div class="L" id="s5" style="background:#edeae4;color:var(--ink)">
   <div class="abs" style="left:0;right:0;top:0;height:230px;background:#fff;display:flex;align-items:flex-end;padding:0 60px 40px;font:900 50px var(--f)">‹ &nbsp;우리 동네 뉴스방 <span style="color:#999;margin-left:14px">4</span></div>
   <div id="chat"></div>
 </div>
@@ -104,7 +104,7 @@ canvas{position:absolute;inset:0}
 <div class="L" id="s9" style="background:var(--ink)">
   <div id="rep"></div>
   <div class="abs ctr" id="big" style="top:760px">
-    <div style="font:900 210px 'Noto Serif KR';letter-spacing:.02em;line-height:1;background:linear-gradient(180deg,#fff 0%,#d9ff3f 55%,#7fe0ff 100%);-webkit-background-clip:text;color:transparent;-webkit-text-stroke:3px #fff">매일신문</div>
+    <div style="font:900 210px 'Noto Serif KR';letter-spacing:.02em;line-height:1;background:linear-gradient(180deg,#ffffff 0%,#edeae4 45%,#9d978c 100%);-webkit-background-clip:text;color:transparent">매일신문</div>
   </div>
   <div id="stk"></div>
 </div>
@@ -113,9 +113,9 @@ canvas{position:absolute;inset:0}
 <div class="L" id="s10">
   <div class="abs ctr" id="e1" style="top:640px"><div style="font:900 200px 'Noto Serif KR';letter-spacing:.03em;line-height:1">매일신문</div>
     <div style="font:700 44px 'Noto Serif KR';letter-spacing:.9em;padding-left:.9em;margin-top:24px;opacity:.85">每日新聞</div></div>
-  <div class="abs ctr" id="e2" style="top:1010px"><span class="pill" style="background:var(--lime);color:var(--ink);font-size:52px;padding:16px 40px">대한민국이 pick한 뉴스 📌</span></div>
+  <div class="abs ctr" id="e2" style="top:1010px"><span class="pill" style="background:var(--red);color:#fff;font-size:52px;padding:16px 40px">대한민국이 pick한 뉴스 📌</span></div>
   <div class="abs ctr" id="e3" style="top:1190px"><span id="cta" class="pill" style="background:#fff;color:var(--ink);font-size:58px;padding:26px 60px;box-shadow:0 12px 0 rgba(0,0,0,.25)">구독 ㄱㄱ → imaeil.com</span></div>
-  <div class="abs" id="tap" style="width:160px;height:160px;border-radius:50%;border:8px solid var(--lime);left:460px;top:1170px;opacity:0"></div>
+  <div class="abs" id="tap" style="width:160px;height:160px;border-radius:50%;border:4px solid #edeae4;left:460px;top:1170px;opacity:0"></div>
   <div class="abs ctr" id="e4" style="top:1400px;font:700 34px var(--f);letter-spacing:.2em;opacity:.8">SINCE 1946 · 창간 80주년</div>
 </div>
 
@@ -140,7 +140,7 @@ const HITS=[b(1),b(1)+2*B,b(2)+2*B,b(2)+3*B,b(4),b(6),b(8),b(9),b(10),b(12),b(14
 
 // ─── 메시 그라데이션 배경 ───
 const mesh=$('#mesh').getContext('2d');
-const PALS={cool:['#2f4bff','#7b5cff','#ff7ac8','#0b0b10'],acid:['#d9ff3f','#2f4bff','#ff7ac8','#7b5cff'],dark:['#ff7ac8','#2f4bff','#7b5cff','#0b0b10']};
+const PALS={cool:['#3b3935','#24231f','#57534c','#0e0e0d'],acid:['#4a4741','#2b2a26','#6b665d','#161614'],dark:['#3b3935','#24231f','#4f4b44','#0e0e0d']};
 function drawMesh(t,pal){
   const g=mesh; g.fillStyle=pal[3]; g.fillRect(0,0,270,480);
   pal.slice(0,3).forEach((c,i)=>{const x=135+Math.sin(t*.9+i*2.1)*100, y=240+Math.cos(t*.7+i*1.7)*170, r=190+30*Math.sin(t*1.3+i);
@@ -155,16 +155,16 @@ const notiEls=NOTI.map(([ic,app,msg,time,at],i)=>{const d=el('div','abs glass',$
   d.style.cssText+=`;left:50px;width:980px;padding:34px 40px;top:${720+i*230}px`;return {d,at}});
 
 // ─── S3 해시태그 ───
-const TAGS=[['#텍스트힙','var(--blue)','#fff',80,1380,-6],['#종이감성','var(--pink)','var(--ink)',520,1470,5],['#아날로그','var(--ink)','var(--lime)',160,1590,3],['#갓생','var(--red)','#fff',620,1640,-8]];
+const TAGS=[['#텍스트힙','#0e0e0d','#edeae4',80,1380,-6],['#종이감성','#d6d1c8','#0e0e0d',520,1470,5],['#아날로그','#0e0e0d','#ff4f1a',160,1590,3],['#갓생','#ff4f1a','#fff',620,1640,-8]];
 const tagEls=TAGS.map(([tx,bg,fg,x,y,r],i)=>{const d=el('div','sticker',$('#tags'),tx);d.style.cssText+=`;left:${x}px;top:${y}px;background:${bg};color:${fg}`;return {d,r,at:b(3)+2*B+i*B/2}});
 
 // ─── S5 채팅 ───
 const CHAT=[['L','민지','야 오늘 매일신문 봤어?',b(6)+B*.5],['R','','ㅇㅇ 1면 ㄹㅇ 미쳤음 🔥',b(6)+B*2],['L','준호','우리 동네 얘기 나옴 ㄷㄷ',b(6)+B*3.2],['R','','링크 ㄱㄱ',b(7)+B*.4]];
 const chatEls=CHAT.map(([side,name,msg,at],i)=>{const y=330+i*210;
   const d=el('div','bub',$('#chat'),(name?`<div style="font:700 30px var(--f);color:#777;margin-bottom:6px">${name}</div>`:'')+msg);
-  d.style.cssText+=side==='L'?`;left:60px;top:${y}px;background:#fff`:`;right:60px;top:${y}px;background:var(--lime)`;
+  d.style.cssText+=side==='L'?`;left:60px;top:${y}px;background:#fff`:`;right:60px;top:${y}px;background:var(--ink);color:#edeae4`;
   const typing=el('div','bub',$('#chat'),'<span class="dt">●</span> <span class="dt">●</span> <span class="dt">●</span>');
-  typing.style.cssText+=side==='L'?`;left:60px;top:${y+(name?40:0)}px;background:#fff;color:#999;font-size:36px`:`;right:60px;top:${y}px;background:var(--lime);color:#556;font-size:36px`;
+  typing.style.cssText+=side==='L'?`;left:60px;top:${y+(name?40:0)}px;background:#fff;color:#999;font-size:36px`:`;right:60px;top:${y}px;background:var(--ink);color:#888;font-size:36px`;
   return {d,typing,at,side}});
 const link=el('div','abs',$('#chat'),`<div style="background:#fff;border-radius:40px;overflow:hidden;width:820px;box-shadow:0 20px 40px rgba(0,0,0,.12)">
   <div style="height:300px;background:var(--ink);display:flex;align-items:center;justify-content:center;flex-direction:column"><div style="font:900 120px 'Noto Serif KR';color:#fff">매일신문</div><div style="font:700 30px var(--f);color:var(--lime);letter-spacing:.3em;margin-top:10px">每日新聞 · SINCE 1946</div></div>
@@ -173,7 +173,7 @@ link.style.cssText+=';right:60px;top:1180px';
 const react=el('div','sticker',$('#chat'),'👍 3');react.style.cssText+=';left:170px;top:1640px;background:#fff;color:var(--ink)';
 
 // ─── S6 스와이프 카드 ───
-const SW=[['정치','var(--blue)','#fff'],['경제','var(--pink)','var(--ink)'],['사회','var(--lime)','var(--ink)'],['국제','#fff','var(--ink)'],['스포츠','var(--red)','#fff'],['문화','var(--ink)','var(--lime)'],['오피니언','var(--blue)','#fff'],['사람','var(--pink)','var(--ink)']];
+const SW=[['정치','#1c1c1b','#edeae4'],['경제','#d6d1c8','#0e0e0d'],['사회','#0e0e0d','#edeae4'],['국제','#edeae4','#0e0e0d'],['스포츠','#ff4f1a','#fff'],['문화','#2e2d2a','#edeae4'],['오피니언','#bdb6aa','#0e0e0d'],['사람','#0e0e0d','#ff4f1a']];
 const swEls=SW.map(([k,bg,fg],i)=>{const c=el('div','card',$('#swipes'),`<div class="b9" style="font-size:44px;opacity:.7">매일신문 · ${String(i+1).padStart(2,'0')}</div><div class="b9" style="font-size:190px;line-height:1.05;margin-top:40px">${k}</div>
   ${'<div style="height:26px;border-radius:13px;background:currentColor;opacity:.18;margin-top:34px"></div>'.repeat(5)}`);
   c.style.background=bg;c.style.color=fg;c.style.zIndex=100-i;return c});
@@ -190,13 +190,13 @@ const todoEls=TODO.map(([a,s],i)=>{const d=el('div','',$('#todo'),`<div style="d
 // ─── S8 3D 텍스트 링 + 마키 ───
 const RN=12, ringEls=[];
 for(let i=0;i<RN;i++){const d=el('div','b9',$('#ring'),i%3===2?'신문':'매일');d.style.cssText=`position:absolute;left:-200px;top:-95px;width:400px;height:190px;display:flex;align-items:center;justify-content:center;font-size:140px;
-  background:${i%2?'var(--lime)':'var(--ink)'};color:${i%2?'var(--ink)':'var(--lime)'};border-radius:30px;backface-visibility:hidden`;ringEls.push(d);}
+  background:${i%2?'var(--paper)':'var(--ink)'};color:${i%2?'var(--ink)':(i%3===2?'var(--red)':'var(--paper)')};border-radius:30px;border:2px solid rgba(255,255,255,.12);backface-visibility:hidden`;ringEls.push(d);}
 const MQ=['NEWS EVERY MORNING ✦ ','매일 · 매일 · 매일 ✦ ','대한민국이 PICK한 뉴스 ✦ ','SINCE 1946 ✦ 80TH ✦ '];
-const mqEls=MQ.map((m,i)=>{const d=el('div','abs b9',$('#mq'),m.repeat(10));d.style.cssText+=`;left:0;top:${160+i*(i<2?140:0)+(i>=2?1440+(i-2)*140:0)}px;font-size:110px;white-space:nowrap;color:${i%2?'var(--lime)':'#fff'}`;return d});
+const mqEls=MQ.map((m,i)=>{const d=el('div','abs b9',$('#mq'),m.repeat(10));d.style.cssText+=`;left:0;top:${160+i*(i<2?140:0)+(i>=2?1440+(i-2)*140:0)}px;font-size:110px;white-space:nowrap;color:${i%2?'rgba(237,234,228,.35)':'#edeae4'}`;return d});
 
 // ─── S9 로고 리피트 + 스티커 ───
 const repEls=[];for(let j=0;j<12;j++){const d=el('div','abs',$('#rep'),'매일신문 매일신문 매일신문');d.style.cssText=`left:-120px;top:${j*165}px;font:900 150px 'Noto Serif KR';white-space:nowrap;letter-spacing:.02em`;repEls.push(d);}
-const STK=[['since 1946','var(--blue)','#fff',90,420,-8],['80th 🎉','var(--lime)','var(--ink)',640,560,7],['대한민국이 pick한 뉴스','var(--pink)','var(--ink)',120,1120,-4],['📰 종이·웹·유튜브','#fff','var(--ink)',300,1300,5]];
+const STK=[['since 1946','#edeae4','#0e0e0d',90,420,-8],['80th','#ff4f1a','#fff',640,560,7],['대한민국이 pick한 뉴스','#262523','#edeae4',120,1120,-4],['종이 · 웹 · 유튜브','#d6d1c8','#0e0e0d',300,1300,5]];
 const stkEls=STK.map(([tx,bg,fg,x,y,r],i)=>{const d=el('div','sticker',$('#stk'),tx);d.style.cssText+=`;left:${x}px;top:${y}px;background:${bg};color:${fg}`;return {d,r,at:b(15)+i*B/2}});
 
 window.render=function(t){
@@ -220,7 +220,7 @@ window.render=function(t){
     pop($('#pov'),t,b(1),.5);
     [['#p1',b(1)+B],['#p2',b(1)+2*B]].forEach(([s,at])=>{const e=$(s);const q=eo5((t-at)/.18);e.style.opacity=t>=at?1:0;e.style.transform=`translateX(${(1-q)*-300}px)`;});
     const gl=pulse(t,b(1)+2*B,.35); const r=rng(k)();
-    $('#p2').style.textShadow=gl?`${(r-.5)*40*gl}px 0 #ff3b30, ${-(r-.5)*40*gl}px 0 #2ff0ff`:'none';
+    $('#p2').style.textShadow=gl?`${(r-.5)*40*gl}px 0 #ff4f1a, ${-(r-.5)*40*gl}px 0 rgba(237,234,228,.6)`:'none';
     const e=$('#eyes'); const s=pop(e,t,b(1)+3*B,.2); e.style.transform+=` rotate(${Math.sin(t*20)*6}deg)`;
   }
   // S3
@@ -259,7 +259,7 @@ window.render=function(t){
   // S7
   if(t>=b(10)&&t<b(12)){
     todoEls.forEach(({d,at},i)=>{const q=eo5((t-(at-B*.6))/.25); d.style.opacity=q; d.style.transform=`translateX(${(1-q)*-120}px)`;
-      const box=d.querySelector('.box'); const on=t>=at; box.style.background=on?'var(--lime)':'transparent'; box.style.borderColor=on?'var(--lime)':'#fff';
+      const box=d.querySelector('.box'); const on=t>=at; box.style.background=on?'var(--red)':'transparent'; box.style.borderColor=on?'var(--red)':'rgba(237,234,228,.5)'; box.style.color='#fff';
       box.textContent=on?'✓':''; box.style.transform=`scale(${1+pulse(t,at,.25)*.35})`;});
   }
   // S8
@@ -268,12 +268,12 @@ window.render=function(t){
     ringEls.forEach((d,i)=>{d.style.transform=`rotateX(-8deg) rotateY(${ang+i*360/RN}deg) translateZ(560px)`;});
     $('#ring').style.transform=`scale(${lerp(.7,1.05,eo(p))})`;
     mqEls.forEach((d,i)=>{const sp=(i%2?1:-1)*(500+ei(p)*1100); d.style.transform=`translateX(${(((t-b(12))*sp)%1400)-1400*(i%2?1:0)}px)`;});
-    $('#s8').style.background=(Math.floor((t-b(13))/(B/2))%2===0&&t>=b(13)+2*B)?'var(--violet)':'var(--blue)';
+    $('#s8').style.background=(Math.floor((t-b(13))/(B/2))%2===0&&t>=b(13)+2*B)?'#262523':'#141413';
   }
   // S9
   if(t>=b(14)&&t<b(16)){
     const k8=Math.floor((t-b(14))/(B/2));
-    repEls.forEach((d,j)=>{const inv=(k8+j)%4===0&&(j<3||j>7); d.style.color=inv?'var(--lime)':'rgba(255,255,255,.06)';
+    repEls.forEach((d,j)=>{const inv=(k8+j)%4===0&&(j<3||j>7); d.style.color=inv?'var(--red)':'rgba(255,255,255,.05)';
       d.style.transform=`translateX(${(j%2?-1:1)*((t-b(14))*260)%600}px)`;});
     const bg=$('#big'); const s=spring((t-b(14))*1.3); bg.style.transform=`scale(${lerp(1.8,1,s)})`; bg.style.opacity=clamp((t-b(14))/.05);
     stkEls.forEach(({d,r,at})=>{pop(d,t,at,.2);d.style.transform+=` rotate(${r+Math.sin(t*5+r)*2}deg)`;});
